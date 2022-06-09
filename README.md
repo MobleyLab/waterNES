@@ -3,7 +3,7 @@ This repository contains workflows to calculate relative free energies
 using non-equilibrium switching for buried water molecules. These
 workflows operate on thermodynamic cycles like these:
 
-![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/ThermodynamicCycle.pdf?raw=true)
+![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/ThermodynamicCycle.png?raw=true)
 
 The purple cycle includes additional restraints for the protein, and
 is preferred when it is likely that the binding site might collapse
