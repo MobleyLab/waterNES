@@ -26,7 +26,14 @@ jobs:
           channel-priority: true
           environment-file: devtools/conda-envs/test_env.yml
           auto-activate-base: false
+      # Get more information about environmeht
+      - name: Environment information
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
       # Test that simulations run without error
       - name: Run simulations
+        shell: bash -l {0}
         run: |
           bash tests/test_run_simulations.sh
