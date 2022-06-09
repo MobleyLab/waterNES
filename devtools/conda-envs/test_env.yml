@@ -1,0 +1,6 @@
+name: test
+channels:
+  - conda-forge
+dependencies:
+  # Run test simulations
+  - gromacs=2022.1
