@@ -18,14 +18,14 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v3
       # Prepare a minimal environment
-     - name: Setup Miniconda
-       uses: conda-incubator/setup-miniconda@v2.1.1
-       with:
-         python-version: 3.9
-         activate-environment: test
-         channel-priority: true
-         environment-file: devtools/conda-envs/test_env.yaml
-         auto-activate-base: false
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          python-version: 3.9
+          activate-environment: test
+          channel-priority: true
+          environment-file: devtools/conda-envs/test_env.yaml
+          auto-activate-base: false
       # Test that simulations run without error
       - name: Run simulations
         run: |
