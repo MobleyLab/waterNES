@@ -1,0 +1,32 @@
+name: Test
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out current repo
+      - name: Checkout current repository
+        uses: actions/checkout@v3
+      # Prepare a minimal environment
+     - name: Setup Miniconda
+       uses: conda-incubator/setup-miniconda@v2.1.1
+       with:
+         python-version: 3.9
+         activate-environment: test
+         channel-priority: true
+         environment-file: devtools/conda-envs/test_env.yaml
+         auto-activate-base: false
+      # Test that simulations run without error
+      - name: Run simulations
+        run: |
+          bash tests/test_run_simulations.sh
