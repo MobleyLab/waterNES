@@ -1,0 +1,12 @@
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+free-energy              = yes
+init_lambda              = 1
+delta_lambda             = 0
+couple-moltype           = MOL
+couple-lambda0           = vdw-q
+couple-lambda1           = none
+couple-intramol          = no
+nstdhdl                  = 100
+separate-dhdl-file       = yes

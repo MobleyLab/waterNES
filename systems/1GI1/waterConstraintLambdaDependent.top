@@ -1,0 +1,4 @@
+[ intermolecular_interactions]
+[bonds]
+; ai     aj    type   bA      kA     bB      kB
+ 3223   3224  6      0.158   8368.0 0.158   0.0

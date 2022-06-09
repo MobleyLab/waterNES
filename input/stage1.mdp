@@ -1,0 +1,11 @@
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+free-energy              = yes
+init_lambda_state         = 1
+delta_lambda             = 0
+couple-intramol          = no
+nstdhdl                  = 100
+bonded-lambdas           = 0.0 1.0
+separate-dhdl-file       = yes
+calc-lambda-neighbors    = -1
