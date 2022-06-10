@@ -159,7 +159,7 @@ are stored in separate files in the same directories named
 `waterConstraintLambdaDependent.top`, respectively.
 
 #### Configuration files
-The input configurations (named `systems.gro`) used for the
+The input configurations (named `system.gro`) used for the
 minimization are stored in the same folders as their respective
 topology files.
 
