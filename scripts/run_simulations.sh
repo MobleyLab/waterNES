@@ -86,7 +86,7 @@ TOPDIR=$(readlink -f $TOPDIR)
 [ ! -z "$CRD" ] && CRD=$(readlink -f $CRD)
 
 # Check presence of needed topology files for all stages and phases
-for file in system waterConstraintLambdaIndependent waterConstraintLambdaDependent; do
+for file in system waterRestraintLambdaIndependent waterRestraintLambdaDependent; do
   [ -e $TOPDIR/$file.top ] || fail "File $file.top not found in directory $TOPDIR"
 done
 
@@ -149,12 +149,12 @@ for phase in $PHASES; do
   TOP=$WORKDIR/topology.top
   cp $TOPDIR/system.top $TOP || fail "Error creating topology file"
   if [ $STAGE -eq 3 ]; then
-    CONSTRAINT_FILE=waterConstraintLambdaIndependent.top
+    RESTRAINT_FILE=waterRestraintLambdaIndependent.top
   else
-    CONSTRAINT_FILE=waterConstraintLambdaDependent.top
+    RESTRAINT_FILE=waterRestraintLambdaDependent.top
   fi
   echo >> $TOP
-  cat $TOPDIR/$CONSTRAINT_FILE >> $TOP || fail "Error creating topology file"
+  cat $TOPDIR/$RESTRAINT_FILE >> $TOP || fail "Error creating topology file"
   
   run_simulation $WORKDIR $MDP $GRO $TOP
 
