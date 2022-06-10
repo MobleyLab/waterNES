@@ -105,8 +105,8 @@ The topology directory (`-t`) needs to contain topology files for the
 system to be simulated. Required files are the main topology named as
 `system.top`, as well as files containing $\lambda$-dependent and
 $\lambda$-independent position restraints for the water, named
-`waterConstraintLambdaIndependent.top` and
-`waterConstraintLambdaDependent.top`, respectively.
+`waterRestraintLambdaIndependent.top` and
+`waterRestraintLambdaDependent.top`, respectively.
 
 The coordinate file (`-c`) needs to contain starting coordinates for
 the system matching with the topology found in the topology directory.
@@ -155,8 +155,8 @@ folders named by their PDB ID in `systems/`. The base topologies
 which restrains the water to the protein, because these restraints
 vary based on the stage in the thermodynamic cycle. These interactions
 are stored in separate files in the same directories named
-`waterConstraintLambdaIndependent.top` and
-`waterConstraintLambdaDependent.top`, respectively.
+`waterRestraintLambdaIndependent.top` and
+`waterRestraintLambdaDependent.top`, respectively.
 
 #### Configuration files
 The input configurations (named `system.gro`) used for the
