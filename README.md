@@ -183,15 +183,21 @@ Coming soon.
 ### Input files
 #### GROMACS mdp files
 The input parameters for each of the phases (min / eqNVT / eqNPT /
-prod) are almost identical between the different stages of the
+prod / NES) are almost identical between the different stages of the
 thermodynamics cycle. The common parameters are stored in
-`input/{min,eqNVT,eqNPT,prod}.mdp`. Any changes to the simulations of
-the different phases can be done in these files.
+`input/{min,eqNVT,eqNPT,prod,nes}.mdp`. Any changes to the simulations
+of the different phases can be done in these files.
 
 The difference between the stages are determined by the free energy
 settings of the parameter file. These are stored in
 `input/stage{1,2,3}.mdp`. Any changes to the free energy settings
 defining the different phases can be done in these files.
+
+For the NES phase, the free energy settings are different than for the
+other stages, and there are two independent simulations (coupling or
+decoupling the vdW and the Coulomb interactions separately). As a
+result, there are two additional parameter files for stages 2 and 3,
+`input/stage{2,3}NES{1,2}.mdp`.
 
 The `run_simulations.sh` script combines the phase-defining and the
 stage-defining mdp files to create the run file used by `gmx grompp`.
@@ -201,9 +207,9 @@ The topology files for the different systems mentioned are stored in
 folders named by their PDB ID in `systems/`. The base topologies
 (named `system.top`) do not contain the intramolecular interaction
 which restrains the water to the protein, because these restraints
-vary based on the stage in the thermodynamic cycle. These interactions
-are stored in separate files in the same directories named
-`waterRestraintLambdaIndependent.top` and
+vary based on the stage in the thermodynamic cycle and the simulation
+phase. These interactions are stored in separate files in the same
+directories named `waterRestraintLambdaIndependent.top` and
 `waterRestraintLambdaDependent.top`, respectively.
 
 #### Configuration files
@@ -213,10 +219,11 @@ topology files.
 
 ## Tests
 ### `tests/test_run_simulations.sh`
-This script tests the `scripts/run_simulations.sh` file by making sure
-that the typical usage (including calls to GROMACS) runs without
-errors. The test is invoked by calling `bash
-tests/test_run_simulations.sh` from the root of the repository. The
-test script expects `gmx` to be in the path.
+This script tests the `scripts/run_simulations.sh` and
+`scripts/prepare_nes_structures.sh` files by making sure that the
+typical usage (including calls to GROMACS) runs without errors. The
+test is invoked by calling `bash tests/test_run_simulations.sh` from
+the root of the repository. The test script expects `gmx` to be in the
+path.
 
-Github actions runs this test on every push and every PR to `main`.
+A Github action runs this test on every push and every PR to `main`.
