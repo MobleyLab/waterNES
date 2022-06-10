@@ -12,7 +12,7 @@ function help()
   usage
   echo "Options:"
   echo -e "-h\tPrint this help and exit"
-  echo -e "-d dir\tThe base working directory for the system"
+  echo -e "-d dir\tThe base working directory for the stage"
   echo -e "-t top\tThe topology directory including topology files"
   echo -e "-c crd\tThe input coordinates, for minimization only"
   echo -e "-x gmx\tThe GROMACS executable to use"
