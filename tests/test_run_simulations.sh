@@ -1,7 +1,14 @@
 #!/bin/bash
 
+function restore_input_files()
+{
+  # Restore the original mdp files
+  for file in input/*.mdp; do [ -e $file.bk ] && mv $file.bk $file; done
+}
+
 function fail()
 {
+  restore_input_files
   echo -e "ERROR: $1"
   exit 1
 }
@@ -30,9 +37,9 @@ TOPDIR=$WORKDIR
 CRD=$WORKDIR/system.gro
 # Check that typical usage runs without errors, using very small simulations to be fast
 bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -c $CRD -x $GMX -o "-nt 1" -s 2 -p min || fail "Error in simulation."
-bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -c $CRD -x $GMX -o "-nt 1" -s 2 -p eqNVT || fail "Error in simulation."
-bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -c $CRD -x $GMX -o "-nt 1" -s 2 -p eqNPT || fail "Error in simulation."
-bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -c $CRD -x $GMX -o "-nt 1" -s 2 -p prod || fail "Error in simulation."
+bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -x $GMX -o "-nt 1" -s 2 -p eqNVT || fail "Error in simulation."
+bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -x $GMX -o "-nt 1" -s 2 -p eqNPT || fail "Error in simulation."
+bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -x $GMX -o "-nt 1" -s 2 -p prod || fail "Error in simulation."
 # Run the other stages in one go
 bash $RUN_SCRIPT -d $WORKDIR/stage1 -t $TOPDIR -c $CRD -x $GMX -o "-nt 1" -s 1 -p "min eqNVT eqNPT prod" || fail "Error in simulation."
 bash $RUN_SCRIPT -d $WORKDIR/stage3 -t $TOPDIR -c $CRD -x $GMX -o "-nt 1" -s 3 -p "min eqNVT eqNPT prod" || fail "Error in simulation."
@@ -41,9 +48,12 @@ bash $RUN_SCRIPT -d $WORKDIR/stage3 -t $TOPDIR -c $CRD -x $GMX -o "-nt 1" -s 3 -
 bash $STRUCTURES_SCRIPT -d $WORKDIR/stage2 -x $GMX -n 2 || fail "Error in NES structure preparation"
 bash $STRUCTURES_SCRIPT -d $WORKDIR/stage3 -x $GMX -n 1 || fail "Error in NES structure preparation"
 
-# Restore the original mdp files
-for file in input/*.mdp; do mv $file.bk $file; done
+# Run the NES stages
+bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -x $GMX -o "-nt 1" -s 2 -p NES -n 1 || fail "Error in NES simulation."
+bash $RUN_SCRIPT -d $WORKDIR/stage2 -t $TOPDIR -x $GMX -o "-nt 1" -s 2 -p NES -n 2 || fail "Error in NES simulation."
+bash $RUN_SCRIPT -d $WORKDIR/stage3 -t $TOPDIR -x $GMX -o "-nt 1" -s 3 -p NES -n 1 || fail "Error in NES simulation."
 
 # If we reached here, all commands passed without error!
+restore_input_files
 echo "SUCCESS: All simulations ran without error."
 exit 0

@@ -2,7 +2,7 @@
 
 function usage()
 {
-  echo "USAGE: prepare_nes_structures [-h] -d dir -x gmx -n num"
+  echo "USAGE: $(basename $0) [-h] -d dir -x gmx -n num"
 }
 
 function help()
@@ -13,7 +13,7 @@ function help()
   echo "Options:"
   echo -e "-h\tPrint this help and exit"
   echo -e "-d dir\tThe base working directory of the stage"
-  echo -e "\tThis directory is expected to have a subdirectory `prod`"
+  echo -e "\tThis directory is expected to have a subdirectory prod/"
   echo -e "\twith the results of the production simulation of that stage"
   echo -e "-x gmx\tThe GROMACS executable to use"
   echo -e "-n num\tThe number of structures to prepare"

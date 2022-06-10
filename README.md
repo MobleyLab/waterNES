@@ -68,33 +68,36 @@ complexes are named after their PDB ID. They include
 ### Run simulations
 All simulations can be run using the `bash` file
 `scripts/run_simulations.sh`. There is an integrated documentation
-which can be called by
+which can be called by running the script with the `-h` flag:
 
 ```
 $ bash scripts/run_simulations.sh -h
 Run Water NES simulations.
 
-USAGE: run_water_nes [-h] -d dir -t dir [-c crd] -x gmx [-o opts] -s N -p {min,eqNVT,eqNPT,prod}
+USAGE: run_simulations.sh [-h] -d dir -t dir [-c crd] -x gmx [-o opts] -s N -p {min,eqNVT,eqNPT,prod,NES} [-n N]
 Options:
--h	Print this help and exit
--d dir	The base working directory for the system
--t top	The topology directory including topology files
--c crd	The input coordinates, for minimization only
--x gmx	The GROMACS executable to use
--o opts	The run options, e.g. "-nt 16 -ntomp 4", optional
--s N	The stage to run, one of:
-	1: Stage with fully interacting, non-restrained water
-	2: Stage with fully interacting, restrained water
-	3: Stage with non-interacting, restrained water
--p {min,eqNVT,eqNPT,prod}
-	The simulation phase to run, one or more of: min, eqNVT, eqNPT, prod
-	Separate different phases by spaces, e.g. -p "min eqNVT eqNPT".
+-h      Print this help and exit
+-d dir  The base working directory for the stage
+-t top  The topology directory including topology files
+-c crd  The input coordinates
+        Mandatory for the minimization phase, ignored otherwise
+-x gmx  The GROMACS executable to use
+-o opts The run options, e.g. "-nt 16 -ntomp 4", optional
+-s N    The stage to run, one of:
+        1: Stage with fully interacting, non-restrained water
+        2: Stage with fully interacting, restrained water
+        3: Stage with non-interacting, restrained water
+-p {min,eqNVT,eqNPT,prod,NES}
+        The simulation phase to run, one or more of: min, eqNVT, eqNPT, prod, NES
+        Separate different phases by spaces, e.g. -p "min eqNVT eqNPT"
+        Note: The NES phase is only available for stages 2 and 3
+-n N    The run number for the NES phase
+        Mandatory for the NES phase, ignored otherwise
 ```
 
 In the above `USAGE` string, flags in brackets (`[]`) are optional,
 options in braces (`{}`) denote possible values, and all other flags
-are mandatory. Note that the coordinates (`-c` flag) is mandatory
-for the minimization phase, and ignored for all other phases.
+are mandatory.
 
 The directory (`-d`) is the base directory. All simulations input and
 output is going to be written in subdirectories of this base
@@ -125,9 +128,54 @@ as defined above.
 The simulation phase (`-p`) defines the simulation to be run, one of
 `min` (minimization of the input configuration), `eqNVT`
 (thermalization at constant volume), `eqNPT` (equilibration at
-constant temperature and pressure), and `prod` (production simulation
-in NPT). Each phase builds on the previous phase. Several phases can
-be combined.
+constant temperature and pressure), `prod` (production simulation in
+NPT), and `NES` (non-equilibrium transition simulations, only for
+stages 2 and 3). Each phase builds on the previous phase. Several
+phases can be combined. Note that the `NES` phase requires that the
+starting structures were prepared from the result of the `prod` phase,
+so it cannot be directly chained.
+
+For the NES phase, the run number needs to be given with the flag
+`-n`. Each run starts from a different configuration, extracted from
+the production simulation with the `scripts/prepare_nes_structures.sh`
+script. The `-n` flag is ignored for all other phases.
+
+### Prepare configurations for NES runs
+NES simulations need to be run from multiple starting structures
+representative of the ensemble of configurations in the end states. To
+achieve this, we extract configurations from the long NPT production
+simulations in stages 2 and 3. This operation can be performed using
+the `scripts/prepare_nes_structures.sh` script. Again, a help function
+describes the functionality:
+
+```
+Prepare structures for NES simulations
+
+USAGE: prepare_nes_structures.sh [-h] -d dir -x gmx -n num
+Options:
+-h      Print this help and exit
+-d dir  The base working directory of the stage
+        This directory is expected to have a subdirectory prod/
+        with the results of the production simulation of that stage
+-x gmx  The GROMACS executable to use
+-n num  The number of structures to prepare
+```
+
+In the above `USAGE` string, flags in brackets (`[]`) are optional,
+while all other flags are mandatory.
+
+The directory (`-d`) is the base directory of the stage in which all
+simulation input and output was written, and should be the same
+directory that was used for the `-d` flag of the `run_simulations.sh`
+script. Specifically, the script is looking for the mdp file and the
+trajectory file in the `prod/` subfolder.
+
+The GROMACS executable to use (`-x`) can either be a path to an
+executable, or simply `gmx` if it is in the path.
+
+Finally, `-n` denotes the number of structures to prepare. This
+defines how many structures are extracted from the production
+simulation for further use.
 
 ### Analysis
 Coming soon.

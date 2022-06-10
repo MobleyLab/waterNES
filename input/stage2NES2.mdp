@@ -1,0 +1,13 @@
+; Free energy control stuff
+free_energy              = yes
+init_lambda              = 0
+delta_lambda             = 0.000008  ;1/nsteps
+; Options for the decoupling
+sc-alpha                 = 0.5
+sc-coul                  = no
+sc-power                 = 1
+sc-sigma                 = 0.3
+couple-moltype           = MOL
+couple-intramol          = no
+couple-lambda0           = vdw  ;(state A)
+couple-lambda1           = none ;(state B)
