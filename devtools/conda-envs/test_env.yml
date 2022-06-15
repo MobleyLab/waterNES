@@ -2,5 +2,12 @@ name: test
 channels:
   - conda-forge
 dependencies:
+  # Python tests
+  - pytest
+  - pytest-regressions
+
   # Run test simulations
   - gromacs=2022.1
+
+  # Default dependencies
+  - numpy

@@ -26,7 +26,12 @@ jobs:
           channel-priority: true
           environment-file: devtools/conda-envs/test_env.yml
           auto-activate-base: false
-      # Get more information about environmeht
+      # Install pmx from the (py3 compatible) develop branch
+      - name: Install pmx
+        shell: bash
+        run: |
+          pip install git+https://github.com/deGrootLab/pmx.git@develop
+      # Get more information about environment
       - name: Environment information
         shell: bash -l {0}
         run: |
@@ -37,3 +42,8 @@ jobs:
         shell: bash -l {0}
         run: |
           bash tests/test_run_simulations.sh
+      # Run Python tests
+      - name: Run Python tests
+        shell: bash -l {0}
+        run: |
+          pytest tests/
