@@ -1,13 +1,11 @@
 #!/bin/bash
 
-function restore_input_files()
-{
+function restore_input_files() {
   # Restore the original mdp files
   for file in input/*.mdp; do [ -e "$file".bk ] && mv "$file".bk "$file"; done
 }
 
-function fail()
-{
+function fail() {
   restore_input_files
   echo -e "ERROR: $1"
   exit 1
@@ -24,7 +22,7 @@ STRUCTURES_SCRIPT=scripts/prepare_nes_structures.sh
 
 # Check that GROMACS is available as `gmx`
 GMX=gmx
-which $GMX &> /dev/null || fail "Executable $GMX not found."
+which $GMX &>/dev/null || fail "Executable $GMX not found."
 
 # Do some changes to input files to ensure fast runs
 for file in input/*.mdp; do cp "$file" "$file".bk; done

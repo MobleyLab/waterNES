@@ -1,12 +1,10 @@
 #!/bin/bash
 
-function usage()
-{
+function usage() {
   echo "USAGE: $(basename "$0") [-h] -d dir -t dir [-c crd] -x gmx [-o opts] -s N -p {min,eqNVT,eqNPT,prod,NES} [-n N]"
 }
 
-function help()
-{
+function help() {
   echo "Run Water NES simulations."
   echo
   usage
@@ -31,8 +29,7 @@ function help()
   echo
 }
 
-function fail()
-{
+function fail() {
   echo -e "ERROR: $1"
   exit 1
 }
@@ -40,16 +37,22 @@ function fail()
 # Get the options
 while getopts "d:t:c:x:o:s:p:n:h" option; do
   case $option in
-    d) BASEDIR="${OPTARG}";;
-    t) TOPDIR="${OPTARG}";;
-    c) CRD="${OPTARG}";;
-    x) GMX="${OPTARG}";;
-    o) RUN_PARAMS="${OPTARG}";;
-    s) STAGE="${OPTARG}";;
-    p) PHASES="${OPTARG}";;
-    n) RUN_NUMBER="${OPTARG}";;
-    h) help; exit 0;;
-    *) usage; exit 1;;
+    d) BASEDIR="${OPTARG}" ;;
+    t) TOPDIR="${OPTARG}" ;;
+    c) CRD="${OPTARG}" ;;
+    x) GMX="${OPTARG}" ;;
+    o) RUN_PARAMS="${OPTARG}" ;;
+    s) STAGE="${OPTARG}" ;;
+    p) PHASES="${OPTARG}" ;;
+    n) RUN_NUMBER="${OPTARG}" ;;
+    h)
+      help
+      exit 0
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
   esac
 done
 
@@ -66,7 +69,7 @@ fi
 mkdir -p "$BASEDIR"
 [ -d "$BASEDIR" ] || fail "Directory $BASEDIR does not exist."
 [ -d "$TOPDIR" ] || fail "Topology directory $TOPDIR does not exist."
-which "$GMX" &> /dev/null || fail "Executable $GMX not found."
+which "$GMX" &>/dev/null || fail "Executable $GMX not found."
 
 VALID_STAGE=0
 for stage in $IMPLEMENTED_STAGES; do
@@ -84,7 +87,7 @@ for phase in $PHASES; do
     fi
   fi
   if [ "$phase" == "NES" ]; then
-    if [ -z "$RUN_NUMBER" ] || ! [ "$RUN_NUMBER" -ge 1 ] &> /dev/null; then
+    if [ -z "$RUN_NUMBER" ] || ! [ "$RUN_NUMBER" -ge 1 ] &>/dev/null; then
       fail "NES phase requires a run number (-n) greater or equal 1"
     fi
     if [ "$STAGE" -ne 2 ] && [ "$STAGE" -ne 3 ]; then
@@ -115,10 +118,8 @@ for phase in $IMPLEMENTED_PHASES; do
   [ -e "$INPUTDIR"/"$phase".mdp ] || fail "Input file $INPUTDIR/$phase.mdp is missing."
 done
 
-
 # Function that runs grompp and mdrun for given directory, mdp file, and gro file
-function run_simulation()
-{
+function run_simulation() {
   local WORKDIR=$1
   local MDP=$2
   local GRO=$3
@@ -128,9 +129,9 @@ function run_simulation()
 
   cd "$WORKDIR" || fail "Could not access directory $WORKDIR."
 
-  $GMX grompp -c "$GRO" -p "$TOP" -f "$MDP" || \
+  $GMX grompp -c "$GRO" -p "$TOP" -f "$MDP" ||
     fail "grompp command failed:\n\t$GMX grompp -c \"$GRO\" -p \"$TOP\" -f \"$MDP\"\n\t(wd: $PWD)"
-  eval "$GMX mdrun $RUN_PARAMS" || \
+  eval "$GMX mdrun $RUN_PARAMS" ||
     fail "mdrun command failed:\n\t$GMX mdrun \"$RUN_PARAMS\"\n\t(wd: $PWD)"
 
   cd "$STARTDIR" || fail "Could not access directory $STARTDIR."
@@ -150,12 +151,12 @@ for phase in $PHASES; do
 
   # Pick input coordinates for phase
   case $phase in
-    "min") GRO=$CRD;;
-    "eqNVT") GRO=$BASEDIR/min/confout.gro;;
-    "eqNPT") GRO=$BASEDIR/eqNVT/confout.gro;;
-    "prod") GRO=$BASEDIR/eqNPT/confout.gro;;
-    "NES") GRO=$BASEDIR/prod/frames/frame$RUN_NUMBER.gro;;
-    *) echo "Unknown phase";;
+    "min") GRO=$CRD ;;
+    "eqNVT") GRO=$BASEDIR/min/confout.gro ;;
+    "eqNPT") GRO=$BASEDIR/eqNVT/confout.gro ;;
+    "prod") GRO=$BASEDIR/eqNPT/confout.gro ;;
+    "NES") GRO=$BASEDIR/prod/frames/frame$RUN_NUMBER.gro ;;
+    *) echo "Unknown phase" ;;
   esac
   [ -e "$GRO" ] || fail "Phase $phase cannot be run because coordinate file $GRO is missing."
 
@@ -163,12 +164,12 @@ for phase in $PHASES; do
   MDP=$WORKDIR/input.mdp
   cp "$INPUTDIR"/"$phase".mdp "$MDP" || fail "Error creating input file"
   if [ "$phase" != "NES" ]; then
-    cat "$INPUTDIR"/stage"$STAGE".mdp >> "$MDP" || fail "Error creating input file"
+    cat "$INPUTDIR"/stage"$STAGE".mdp >>"$MDP" || fail "Error creating input file"
   else
     MDP2=$WORKDIR/input2.mdp
     cp "$MDP" "$MDP2"
-    cat "$INPUTDIR"/stage"${STAGE}"NES1.mdp >> "$MDP" || fail "Error creating input file"
-    cat "$INPUTDIR"/stage"${STAGE}"NES2.mdp >> "$MDP2" || fail "Error creating input file"
+    cat "$INPUTDIR"/stage"${STAGE}"NES1.mdp >>"$MDP" || fail "Error creating input file"
+    cat "$INPUTDIR"/stage"${STAGE}"NES2.mdp >>"$MDP2" || fail "Error creating input file"
   fi
 
   # Create topology file for phase & stage
@@ -184,8 +185,8 @@ for phase in $PHASES; do
     # Stage 2 is running at lambda point with restraints, calculating dH/dL
     RESTRAINT_FILE=waterRestraintLambdaDependent.top
   fi
-  echo >> "$TOP"
-  cat "$TOPDIR"/$RESTRAINT_FILE >> "$TOP" || fail "Error creating topology file"
+  echo >>"$TOP"
+  cat "$TOPDIR"/$RESTRAINT_FILE >>"$TOP" || fail "Error creating topology file"
 
   if [ "$phase" != "NES" ]; then
     run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP"
