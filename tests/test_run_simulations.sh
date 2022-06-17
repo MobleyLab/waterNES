@@ -3,7 +3,7 @@
 function restore_input_files()
 {
   # Restore the original mdp files
-  for file in input/*.mdp; do [ -e $file.bk ] && mv $file.bk $file; done
+  for file in input/*.mdp; do [ -e "$file".bk ] && mv "$file".bk "$file"; done
 }
 
 function fail()
@@ -14,7 +14,7 @@ function fail()
 }
 
 # We expect this to run from the root of the repository
-[ -e tests/$(basename $0) ] || fail "Expected to be in the root repository."
+[ -e tests/"$(basename "$0")" ] || fail "Expected to be in the root repository."
 
 RUN_SCRIPT=scripts/run_simulations.sh
 STRUCTURES_SCRIPT=scripts/prepare_nes_structures.sh
@@ -27,7 +27,7 @@ GMX=gmx
 which $GMX &> /dev/null || fail "Executable $GMX not found."
 
 # Do some changes to input files to ensure fast runs
-for file in input/*.mdp; do cp $file $file.bk; done
+for file in input/*.mdp; do cp "$file" "$file".bk; done
 perl -pi -e 's/^nsteps *=\K.+/ 4/' input/*.mdp
 perl -pi -e 's/^nstxout *=\K.+/ 2/' input/*.mdp
 
