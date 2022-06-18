@@ -70,7 +70,7 @@ All simulations can be run using the `bash` file
 `scripts/run_simulations.sh`. There is an integrated documentation
 which can be called by running the script with the `-h` flag:
 
-```
+```shell
 $ bash scripts/run_simulations.sh -h
 Run Water NES simulations.
 
@@ -148,7 +148,7 @@ simulations in stages 2 and 3. This operation can be performed using
 the `scripts/prepare_nes_structures.sh` script. Again, a help function
 describes the functionality:
 
-```
+```shell
 Prepare structures for NES simulations
 
 USAGE: prepare_nes_structures.sh [-h] -d dir -x gmx -n num
@@ -178,7 +178,59 @@ defines how many structures are extracted from the production
 simulation for further use.
 
 ### Analysis
+#### Edge B
 Coming soon.
+
+#### Edge C
+Analysis of the non-equilibrium switching calculations is implemented in
+a Python function. Here's a minimal example:
+```python
+import pathlib
+
+from water_nes.analysis.nes_free_energy import calculate_nes_free_energy
+
+# Define input directory - here we use the test input files
+input_directory = pathlib.PurePath('tests/nes_input_files')
+
+# Create lists of input files. The transition between stages A and B happens in
+# two steps, by first turning off the Coulomb interactions, then the vdW
+# interactions, or vice-versa.
+xvg_forward_coulomb = [
+    input_directory.joinpath(f"transition_A2B_coul_{n}.xvg") for n in range(1, 11)
+]
+xvg_forward_vdw = [
+    input_directory.joinpath(f"transition_A2B_vdw_{n}.xvg") for n in range(1, 11)
+]
+xvg_backward_coulomb = [
+    input_directory.joinpath(f"transition_B2A_coul_{n}.xvg") for n in range(1, 11)
+]
+xvg_backward_vdw = [
+    input_directory.joinpath(f"transition_B2A_vdw_{n}.xvg") for n in range(1, 11)
+]
+
+# Get free energy estimate in kcal/mol
+free_energy_estimate = calculate_nes_free_energy(
+    xvg_files_forward_transition=[xvg_forward_coulomb, xvg_forward_vdw],
+    xvg_files_backward_transition=[xvg_backward_vdw, xvg_backward_coulomb],
+    temperature=298.15,
+    output_units="kcal/mol",
+    bootstrapping_repeats=0,
+)
+
+# Print free energy estimate
+print(f"Free energy estimate: "
+      f"{free_energy_estimate.value:.2f} += {free_energy_estimate.error:.2f} "
+      f"{free_energy_estimate.units}")
+```
+
+The last line prints the estimate obtained by the `calculate_nes_free_energy`
+function. For the test files, it will look like this:
+
+```shell
+Free energy estimate: 10.41 += 0.62 kcal/mol
+```
+
+This is the free energy estimate for edge C, the transition from stage 2 to stage 3.
 
 ### Input files
 #### GROMACS mdp files

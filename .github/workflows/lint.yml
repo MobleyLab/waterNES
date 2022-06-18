@@ -22,3 +22,25 @@ jobs:
         env:
           # SHELLCHECK_OPTS: # uncomment to set shellcheck options
           SHFMT_OPTS: -ln bash -i 2 -ci # arguments to shfmt.
+
+  py-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v3
+      - name: Set up basic Python installation
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install isort / flake8 / black
+        run: |
+          pip install isort flake8 black
+      - name: Run isort
+        run: |
+          isort --check-only water_nes
+      - name: Run black
+        run: |
+          black water_nes --check
+      - name: Run flake8
+        run: |
+          flake8 --max-line-length 88 water_nes
