@@ -77,7 +77,8 @@ def convert_energy(energy_in_kj_mol: float, units: str) -> float:
 
 class FreeEnergy(NamedTuple):
     r"""
-    Represents a free energy estimate, including information on error estimates and units
+    Represents a free energy estimate, including information
+    on error estimates and units
     """
     value: float
     error: float

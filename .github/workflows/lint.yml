@@ -43,4 +43,4 @@ jobs:
           black water_nes --check
       - name: Run flake8
         run: |
-          flake8 water_nes
+          flake8 --max-line-length 88 water_nes
