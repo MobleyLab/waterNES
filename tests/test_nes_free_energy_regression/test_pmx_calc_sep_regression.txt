@@ -1,25 +1,25 @@
-    First accepted file: scripts/analysis/tests/nes_input_files/transition_A2B_coul_1.xvg
+    First accepted file: tests/nes_input_files/transition_A2B_coul_1.xvg
     # data points: 251
     Length of trajectory:  500.000 ps
     Delta lambda:  0.00398
-    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_2.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_3.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_4.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_5.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_6.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_7.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_8.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_9.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_coul_10.xvg
+    Reading tests/nes_input_files/transition_A2B_coul_2.xvg    Reading tests/nes_input_files/transition_A2B_coul_3.xvg    Reading tests/nes_input_files/transition_A2B_coul_4.xvg    Reading tests/nes_input_files/transition_A2B_coul_5.xvg    Reading tests/nes_input_files/transition_A2B_coul_6.xvg    Reading tests/nes_input_files/transition_A2B_coul_7.xvg    Reading tests/nes_input_files/transition_A2B_coul_8.xvg    Reading tests/nes_input_files/transition_A2B_coul_9.xvg    Reading tests/nes_input_files/transition_A2B_coul_10.xvg
 
-    First accepted file: scripts/analysis/tests/nes_input_files/transition_A2B_vdw_1.xvg
+    First accepted file: tests/nes_input_files/transition_A2B_vdw_1.xvg
     # data points: 251
     Length of trajectory:  500.000 ps
     Delta lambda:  0.00398
-    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_2.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_3.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_4.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_5.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_6.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_7.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_8.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_9.xvg    Reading scripts/analysis/tests/nes_input_files/transition_A2B_vdw_10.xvg
+    Reading tests/nes_input_files/transition_A2B_vdw_2.xvg    Reading tests/nes_input_files/transition_A2B_vdw_3.xvg    Reading tests/nes_input_files/transition_A2B_vdw_4.xvg    Reading tests/nes_input_files/transition_A2B_vdw_5.xvg    Reading tests/nes_input_files/transition_A2B_vdw_6.xvg    Reading tests/nes_input_files/transition_A2B_vdw_7.xvg    Reading tests/nes_input_files/transition_A2B_vdw_8.xvg    Reading tests/nes_input_files/transition_A2B_vdw_9.xvg    Reading tests/nes_input_files/transition_A2B_vdw_10.xvg
 
-    First accepted file: scripts/analysis/tests/nes_input_files/transition_B2A_vdw_1.xvg
+    First accepted file: tests/nes_input_files/transition_B2A_vdw_1.xvg
     # data points: 251
     Length of trajectory:  500.000 ps
     Delta lambda: -0.00398
-    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_2.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_3.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_4.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_5.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_6.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_7.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_8.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_9.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_vdw_10.xvg
+    Reading tests/nes_input_files/transition_B2A_vdw_2.xvg    Reading tests/nes_input_files/transition_B2A_vdw_3.xvg    Reading tests/nes_input_files/transition_B2A_vdw_4.xvg    Reading tests/nes_input_files/transition_B2A_vdw_5.xvg    Reading tests/nes_input_files/transition_B2A_vdw_6.xvg    Reading tests/nes_input_files/transition_B2A_vdw_7.xvg    Reading tests/nes_input_files/transition_B2A_vdw_8.xvg    Reading tests/nes_input_files/transition_B2A_vdw_9.xvg    Reading tests/nes_input_files/transition_B2A_vdw_10.xvg
 
-    First accepted file: scripts/analysis/tests/nes_input_files/transition_B2A_coul_1.xvg
+    First accepted file: tests/nes_input_files/transition_B2A_coul_1.xvg
     # data points: 251
     Length of trajectory:  500.000 ps
     Delta lambda: -0.00398
-    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_2.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_3.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_4.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_5.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_6.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_7.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_8.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_9.xvg    Reading scripts/analysis/tests/nes_input_files/transition_B2A_coul_10.xvg
+    Reading tests/nes_input_files/transition_B2A_coul_2.xvg    Reading tests/nes_input_files/transition_B2A_coul_3.xvg    Reading tests/nes_input_files/transition_B2A_coul_4.xvg    Reading tests/nes_input_files/transition_B2A_coul_5.xvg    Reading tests/nes_input_files/transition_B2A_coul_6.xvg    Reading tests/nes_input_files/transition_B2A_coul_7.xvg    Reading tests/nes_input_files/transition_B2A_coul_8.xvg    Reading tests/nes_input_files/transition_B2A_coul_9.xvg    Reading tests/nes_input_files/transition_B2A_coul_10.xvg
 
 FreeEnergy(value=10.4127, error=0.625, bootstrap_error=0, units='kcal/mol')
