@@ -6,11 +6,19 @@ from water_nes.analysis.nes_free_energy import calculate_nes_free_energy
 
 
 def test_pmx_calc_sep_regression(data_regression, file_regression):
+    # The test input is located in a folder called nes_input_files/ in the same folder
+    # as the test file is located. We're then using the relative path compared to the
+    # current work directory, such that the path is going to look the same on every
+    # system, as long as the test is run from the same directory (typically, the
+    # root directory of the repo).
     test_directory = pathlib.PurePath(__file__).parent
     input_directory = test_directory.joinpath(
         test_directory, "nes_input_files"
     ).relative_to(pathlib.Path.cwd())
 
+    # Create lists of input files. The transition between stages A and B happens in
+    # two steps, by first turning off the Coulomb interactions, then the vdW
+    # interactions, or vice-versa.
     xvg_forward_coulomb = [
         input_directory.joinpath(f"transition_A2B_coul_{n}.xvg") for n in range(1, 11)
     ]
@@ -24,9 +32,8 @@ def test_pmx_calc_sep_regression(data_regression, file_regression):
         input_directory.joinpath(f"transition_B2A_vdw_{n}.xvg") for n in range(1, 11)
     ]
 
-    test_output = StringIO()
-
     # Redirect stdout into string which we can test
+    test_output = StringIO()
     with redirect_stdout(test_output):
         free_energy_estimate = calculate_nes_free_energy(
             xvg_files_forward_transition=[xvg_forward_coulomb, xvg_forward_vdw],
