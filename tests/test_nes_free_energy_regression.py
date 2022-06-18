@@ -2,7 +2,7 @@ import pathlib
 from contextlib import redirect_stdout
 from io import StringIO
 
-from ..nes_free_energy import calculate_nes_free_energy
+from water_nes.analysis.nes_free_energy import calculate_nes_free_energy
 
 
 def test_pmx_calc_sep_regression(data_regression, file_regression):

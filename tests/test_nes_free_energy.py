@@ -2,7 +2,7 @@ import pathlib
 
 import pytest
 
-from ..nes_free_energy import (
+from water_nes.analysis.nes_free_energy import (
     calculate_nes_free_energy,
     convert_energy,
     find_unique_list_size,
