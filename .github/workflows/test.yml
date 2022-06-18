@@ -28,7 +28,7 @@ jobs:
           auto-activate-base: false
       # Install pmx from the (py3 compatible) develop branch
       - name: Install pmx
-        shell: bash
+        shell: bash -l {0}
         run: |
           pip install git+https://github.com/deGrootLab/pmx.git@develop
       # Get more information about environment
