@@ -280,6 +280,26 @@ path.
 
 A GitHub action runs this test on every push and every PR to `main`.
 
+### Python tests
+The Python files located in the `water_nes/` folder are covered by a
+combination of unit and regression tests. They can be invoked by
+```shell
+python -m pytest tests
+```
+
+The tests require `pytest` and `pytest-regressions` to be installed.
+
+The regression tests are storing the output of previous runs of the
+tests, and are comparing the output of the current run to this
+reference output. As is the nature of regression tests, this means
+that some changes will (and should!) make these tests fail.
+The regression tests allow us to monitor exactly what changes
+happened, and check whether they were intended. If such a
+change is intended, the reference data can be regenerated using
+```shell
+python -m pytest tests --force-regen
+```
+
 ## HPC3 files
 The scripts located at `hpc3/` are example files on how to use the scripts
 in this repository on UC Irvine's HPC3 cluster. These files are mostly
