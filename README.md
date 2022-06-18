@@ -33,7 +33,7 @@ can be used.
   
 ### Stages
 * **Stage 1**: This simulates the protein complex with an
-  unrestained, fully interacting water molecule.  Simulations include
+  unrestrained, fully interacting water molecule.  Simulations include
   minimization, equilibration in NVT and NPT, production simulation in
   NPT. During the production run, the free energy with respect to the
   water restraint (which is turned off) is calculated.
@@ -113,7 +113,7 @@ $\lambda$-independent position restraints for the water, named
 
 The coordinate file (`-c`) needs to contain starting coordinates for
 the system matching with the topology found in the topology directory.
-This is only needed for the mimization phase.
+This is only needed for the minimization phase.
 
 The GROMACS executable to use (`-x`) can either be a path to an
 executable, or simply `gmx` if it is in the path.
@@ -168,7 +168,7 @@ The directory (`-d`) is the base directory of the stage in which all
 simulation input and output was written, and should be the same
 directory that was used for the `-d` flag of the `run_simulations.sh`
 script. Specifically, the script is looking for the mdp file and the
-trajectory file in the `prod/` subfolder.
+trajectory file in the `prod/` folder under this base directory.
 
 The GROMACS executable to use (`-x`) can either be a path to an
 executable, or simply `gmx` if it is in the path.
@@ -245,7 +245,7 @@ settings of the parameter file. These are stored in
 `input/stage{1,2,3}.mdp`. Any changes to the free energy settings
 defining the different phases can be done in these files.
 
-For the NES phase, the free energy settings are different than for the
+For the NES phase, the free energy settings are different from the
 other stages, and there are two independent simulations (coupling or
 decoupling the vdW and the Coulomb interactions separately). As a
 result, there are two additional parameter files for stages 2 and 3,
@@ -278,4 +278,10 @@ test is invoked by calling `bash tests/test_run_simulations.sh` from
 the root of the repository. The test script expects `gmx` to be in the
 path.
 
-A Github action runs this test on every push and every PR to `main`.
+A GitHub action runs this test on every push and every PR to `main`.
+
+## HPC3 files
+The scripts located at `hpc3/` are example files on how to use the scripts
+in this repository on UC Irvine's HPC3 cluster. These files are mostly
+stored to improve reproducibility within the Mobley Lab, but might also be
+useful as templates to others.
