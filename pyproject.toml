@@ -1,2 +1,7 @@
+# Make sure isort and black are compatible
 [tool.isort]
 profile = "black"
+
+# Make sure flake8 and black are compatible
+[tool.pylint.format]
+max-line-length = "88"
