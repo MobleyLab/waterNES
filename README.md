@@ -179,7 +179,40 @@ simulation for further use.
 
 ### Analysis
 #### Edge B
-Coming soon.
+Analysis of the equilibrium endpoint free energy difference is implemented
+in a Python function. See the following simple example for its usage:
+```python
+import pathlib
+
+from water_nes.analysis.endpoint_free_energy import calculate_endpoint_free_energy
+
+# Define input directory - here we use the test input files
+input_directory = pathlib.PurePath('tests/endpoint_input_files')
+
+# The GROMACS free energy xvg files for the end states (lambda = 0 and
+# lambda = 1) are stored in files `lambda0.xvg` and `lambda1.xvg`.
+# In the following example, we calculate the endpoint free energy in
+# kcal/mol, ignoring the initial 1ns and any part of the trajectory
+# after 15ns.
+free_energy_estimate = calculate_endpoint_free_energy(
+    file_lambda_0=input_directory.joinpath("lambda0.xvg"),
+    file_lambda_1=input_directory.joinpath("lambda1.xvg"),
+    start_time=1000,
+    end_time=15000,
+    output_units="kcal/mol",
+)
+
+# Print free energy estimate
+print(f"Free energy estimate: "
+      f"{free_energy_estimate.value:.2f} += {free_energy_estimate.error:.2f} "
+      f"{free_energy_estimate.units}")
+```
+
+The last line prints the estimate obtained by the `calculate_endpoint_free_energy`
+function. For the test files, it will look like this:
+```shell
+Free energy estimate: 2.10 += 0.28 kcal/mol
+```
 
 #### Edge C
 Analysis of the non-equilibrium switching calculations is implemented in
