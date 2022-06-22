@@ -1,8 +1,10 @@
-from typing import Any, Dict, List, NamedTuple, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import numpy as np
 from pmx.analysis import read_dgdl_files
 from pmx.estimators import BAR
+
+from .free_energy_estimate import FreeEnergyEstimate
 
 
 def make_list_of_lists(
@@ -75,32 +77,13 @@ def convert_energy(energy_in_kj_mol: float, units: str) -> float:
     raise NotImplementedError(f"Unit {units} not implemented.")
 
 
-class FreeEnergy(NamedTuple):
-    r"""
-    Represents a free energy estimate, including information
-    on error estimates and units
-    """
-    value: float
-    error: float
-    bootstrap_error: float
-    units: str
-
-    def __round__(self, num_digits: int = 0) -> "FreeEnergy":
-        return FreeEnergy(
-            value=round(self.value, num_digits),
-            error=round(self.error, num_digits),
-            bootstrap_error=round(self.bootstrap_error, num_digits),
-            units=self.units,
-        )
-
-
 def calculate_nes_free_energy(
     xvg_files_forward_transition: Union[List[List[Any]], List[Any]],
     xvg_files_backward_transition: Union[List[List[Any]], List[Any]],
     temperature: float,
     output_units: str,
     bootstrapping_repeats: int = 0,
-) -> FreeEnergy:
+) -> FreeEnergyEstimate:
     r"""Calculate free energy estimate from swarm of non-equilibrium switching simulations
 
     :param xvg_files_forward_transition:
@@ -167,7 +150,7 @@ def calculate_nes_free_energy(
         work["forward"], work["backward"], T=temperature, nboots=bootstrapping_repeats
     )
 
-    return FreeEnergy(
+    return FreeEnergyEstimate(
         value=convert_energy(estimate.dg, output_units),
         error=convert_energy(estimate.err, output_units),
         bootstrap_error=convert_energy(estimate.err_boot, output_units)
