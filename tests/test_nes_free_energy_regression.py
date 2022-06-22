@@ -5,7 +5,7 @@ from io import StringIO
 from water_nes.analysis.nes_free_energy import calculate_nes_free_energy
 
 
-def test_pmx_calc_sep_regression(data_regression, file_regression):
+def test_calculate_nes_free_energy_regression(data_regression, file_regression):
     # The test input is located in a folder called nes_input_files/ in the same folder
     # as the test file is located. We're then using the relative path compared to the
     # current work directory, such that the path is going to look the same on every
