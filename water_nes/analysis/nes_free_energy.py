@@ -153,8 +153,8 @@ def calculate_nes_free_energy(
     return FreeEnergyEstimate(
         value=convert_energy(estimate.dg, output_units),
         error=convert_energy(estimate.err, output_units),
+        units=output_units,
         bootstrap_error=convert_energy(estimate.err_boot, output_units)
         if bootstrapping_repeats > 0
         else 0,
-        units=output_units,
     )

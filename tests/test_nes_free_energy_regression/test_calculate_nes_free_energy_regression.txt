@@ -22,4 +22,4 @@
     Delta lambda: -0.00398
     Reading tests/nes_input_files/transition_B2A_coul_2.xvg    Reading tests/nes_input_files/transition_B2A_coul_3.xvg    Reading tests/nes_input_files/transition_B2A_coul_4.xvg    Reading tests/nes_input_files/transition_B2A_coul_5.xvg    Reading tests/nes_input_files/transition_B2A_coul_6.xvg    Reading tests/nes_input_files/transition_B2A_coul_7.xvg    Reading tests/nes_input_files/transition_B2A_coul_8.xvg    Reading tests/nes_input_files/transition_B2A_coul_9.xvg    Reading tests/nes_input_files/transition_B2A_coul_10.xvg
 
-FreeEnergyEstimate(value=10.4127, error=0.625, bootstrap_error=0, units='kcal/mol')
+FreeEnergyEstimate(value=10.4127, error=0.625, units='kcal/mol', bootstrap_error=0)
