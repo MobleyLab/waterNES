@@ -22,3 +22,44 @@ class FreeEnergyEstimate:
 
     def as_dict(self) -> dict:
         return asdict(self)
+
+    def __add__(self, other: "FreeEnergyEstimate") -> "FreeEnergyEstimate":
+        if self.units != other.units:
+            raise NotImplementedError(
+                "FreeEnergyEstimate objects with different units " "cannot be added"
+            )
+        return FreeEnergyEstimate(
+            value=self.value + other.value,
+            error=self.error + other.error,
+            units=self.units,
+            bootstrap_error=self.bootstrap_error + other.bootstrap_error,
+        )
+
+    def __sub__(self, other: "FreeEnergyEstimate") -> "FreeEnergyEstimate":
+        if self.units != other.units:
+            raise NotImplementedError(
+                "FreeEnergyEstimate objects with different units "
+                "cannot be subtracted"
+            )
+        return FreeEnergyEstimate(
+            value=self.value - other.value,
+            error=self.error + other.error,
+            units=self.units,
+            bootstrap_error=self.bootstrap_error + other.bootstrap_error,
+        )
+
+    def __mul__(self, other: float) -> "FreeEnergyEstimate":
+        return FreeEnergyEstimate(
+            value=self.value * other,
+            error=self.error * other,
+            units=self.units,
+            bootstrap_error=self.bootstrap_error * other,
+        )
+
+    def __truediv__(self, other: float) -> "FreeEnergyEstimate":
+        return FreeEnergyEstimate(
+            value=self.value / other,
+            error=self.error / other,
+            units=self.units,
+            bootstrap_error=self.bootstrap_error / other,
+        )
