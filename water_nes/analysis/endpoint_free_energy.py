@@ -63,6 +63,5 @@ def calculate_endpoint_free_energy(
     return FreeEnergyEstimate(
         value=get_unit_converter(output_units)(mbar.delta_f_).loc[0.0, 1.0].item(),
         error=get_unit_converter(output_units)(mbar.d_delta_f_).loc[0.0, 1.0].item(),
-        bootstrap_error=0,
         units=output_units,
     )

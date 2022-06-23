@@ -46,6 +46,6 @@ def test_calculate_nes_free_energy_regression(data_regression, file_regression):
 
     # Test return value, using a reasonable precision
     # (data_regression fixture requires dict input)
-    data_regression.check(round(free_energy_estimate, 4)._asdict())
+    data_regression.check(round(free_energy_estimate, 4).as_dict())
     # Test printed output
     file_regression.check(contents=test_output.getvalue())
