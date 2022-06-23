@@ -1,4 +1,7 @@
 from dataclasses import asdict, dataclass
+from typing import List
+
+import numpy as np
 
 
 @dataclass
@@ -63,3 +66,44 @@ class FreeEnergyEstimate:
             units=self.units,
             bootstrap_error=self.bootstrap_error / other,
         )
+
+
+def mean_free_energy(
+    free_energy_estimates: List[FreeEnergyEstimate],
+) -> FreeEnergyEstimate:
+    r"""
+    Returns a free energy estimate with value equal to the mean of a list of
+    free energy estimates, and error equal to the standard deviation of the
+    list of values.
+
+    Parameters
+    ----------
+    free_energy_estimates : List[FreeEnergyEstimate]
+        List of independent free energy estimates
+
+    Returns
+    -------
+    FreeEnergyEstimate
+        Mean of the list of free energy estimates, with its
+        standard deviation as error
+
+    """
+    if not free_energy_estimates:
+        raise TypeError("Cannot calculate the average of an empty list.")
+    if any(
+        [
+            estimate.units != free_energy_estimates[0].units
+            for estimate in free_energy_estimates
+        ]
+    ):
+        raise NotImplementedError(
+            "Averaging free energy estimates with different "
+            "units is not implemented."
+        )
+
+    values = np.array([estimate.value for estimate in free_energy_estimates])
+    return FreeEnergyEstimate(
+        value=values.mean(),
+        error=values.std(),
+        units=free_energy_estimates[0].units,
+    )
