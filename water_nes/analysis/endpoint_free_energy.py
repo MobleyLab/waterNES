@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Tuple
 
 import alchemlyb
+import numpy as np
 from alchemlyb.estimators import MBAR
 from alchemlyb.parsing.gmx import extract_u_nk
 from alchemlyb.postprocessors.units import get_unit_converter
@@ -15,7 +16,7 @@ def calculate_endpoint_free_energy(
     start_time: int,
     end_time: int,
     output_units: str,
-) -> FreeEnergyEstimate:
+) -> Tuple[FreeEnergyEstimate, np.ndarray]:
     r"""
     Calculate the free energy difference between two end points using (M)BAR
 
@@ -39,6 +40,8 @@ def calculate_endpoint_free_energy(
     -------
     FreeEnergyEstimate
         The estimate of the free energy difference between the two states.
+    np.ndarray, 2 x 2
+        The overlap matrix between the end states
     """
     # Read reduced potentials, and subsample them to reduce correlation
     # Note: Slicing before calling statistical_inefficiency is currently
@@ -60,8 +63,13 @@ def calculate_endpoint_free_energy(
     # Calculate MBAR
     mbar = MBAR().fit(alchemlyb.concat([u_nk_lambda_0_sub, u_nk_lambda_1_sub]))
 
-    return FreeEnergyEstimate(
-        value=get_unit_converter(output_units)(mbar.delta_f_).loc[0.0, 1.0].item(),
-        error=get_unit_converter(output_units)(mbar.d_delta_f_).loc[0.0, 1.0].item(),
-        units=output_units,
+    return (
+        FreeEnergyEstimate(
+            value=get_unit_converter(output_units)(mbar.delta_f_).loc[0.0, 1.0].item(),
+            error=get_unit_converter(output_units)(mbar.d_delta_f_)
+            .loc[0.0, 1.0]
+            .item(),
+            units=output_units,
+        ),
+        np.array(mbar.overlap_matrix),
     )

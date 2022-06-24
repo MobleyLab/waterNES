@@ -1,4 +1,18 @@
-bootstrap_error: 0.0
-error: 0.2761
-units: kcal/mol
-value: 2.0978
+free energy:
+  bootstrap_error: 0.0
+  error: 0.2761
+  units: kcal/mol
+  value: 2.0978
+overlap matrix:
+  ? - 0
+    - 0
+  : 0.9456
+  ? - 0
+    - 1
+  : 0.0544
+  ? - 1
+    - 0
+  : 0.1072
+  ? - 1
+    - 1
+  : 0.8928

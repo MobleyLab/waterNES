@@ -194,7 +194,7 @@ input_directory = pathlib.PurePath('tests/endpoint_input_files')
 # In the following example, we calculate the endpoint free energy in
 # kcal/mol, ignoring the initial 1ns and any part of the trajectory
 # after 15ns.
-free_energy_estimate = calculate_endpoint_free_energy(
+free_energy_estimate, _ = calculate_endpoint_free_energy(
     file_lambda_0=input_directory.joinpath("lambda0.xvg"),
     file_lambda_1=input_directory.joinpath("lambda1.xvg"),
     start_time=1000,
@@ -242,7 +242,7 @@ xvg_backward_vdw = [
 ]
 
 # Get free energy estimate in kcal/mol
-free_energy_estimate = calculate_nes_free_energy(
+free_energy_estimate, _ = calculate_nes_free_energy(
     xvg_files_forward_transition=[xvg_forward_coulomb, xvg_forward_vdw],
     xvg_files_backward_transition=[xvg_backward_vdw, xvg_backward_coulomb],
     temperature=298.15,

@@ -106,7 +106,7 @@ def calculate_nes_free_energy(
     temperature: float,
     output_units: str,
     bootstrapping_repeats: int = 0,
-) -> FreeEnergyEstimate:
+) -> Tuple[FreeEnergyEstimate, Dict[str, np.ndarray]]:
     r"""Calculate free energy estimate from swarm of non-equilibrium switching simulations
 
     Parameters
@@ -129,6 +129,9 @@ def calculate_nes_free_energy(
     -------
     FreeEnergyEstimate
         The calculated free energy
+    Dict[str, np.ndarray]
+        Dictionary with entries "forward" and "backward". Each entry is an array
+        of total work over the simulations in that direction.
     """
 
     # Unify input to be of type List[List[Any]] to simplify further use
@@ -179,11 +182,14 @@ def calculate_nes_free_energy(
         work["forward"], work["backward"], T=temperature, nboots=bootstrapping_repeats
     )
 
-    return FreeEnergyEstimate(
-        value=convert_energy(estimate.dg, output_units),
-        error=convert_energy(estimate.err, output_units),
-        units=output_units,
-        bootstrap_error=convert_energy(estimate.err_boot, output_units)
-        if bootstrapping_repeats > 0
-        else 0,
+    return (
+        FreeEnergyEstimate(
+            value=convert_energy(estimate.dg, output_units),
+            error=convert_energy(estimate.err, output_units),
+            units=output_units,
+            bootstrap_error=convert_energy(estimate.err_boot, output_units)
+            if bootstrapping_repeats > 0
+            else 0,
+        ),
+        work,
     )

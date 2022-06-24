@@ -1,5 +1,7 @@
 import pathlib
 
+import numpy as np
+
 from water_nes.analysis.endpoint_free_energy import calculate_endpoint_free_energy
 
 
@@ -14,7 +16,7 @@ def test_endpoint_free_energy_regression(data_regression):
         test_directory, "endpoint_input_files"
     ).relative_to(pathlib.Path.cwd())
 
-    free_energy_estimate = calculate_endpoint_free_energy(
+    free_energy_estimate, overlap_matrix = calculate_endpoint_free_energy(
         file_lambda_0=input_directory.joinpath("lambda0.xvg"),
         file_lambda_1=input_directory.joinpath("lambda1.xvg"),
         start_time=1000,
@@ -24,4 +26,13 @@ def test_endpoint_free_energy_regression(data_regression):
 
     # Test return value, using a reasonable precision
     # (data_regression fixture requires dict input)
-    data_regression.check(round(free_energy_estimate, 4).as_dict())
+    precision = 4
+    data_regression.check(
+        {
+            "free energy": round(free_energy_estimate, precision).as_dict(),
+            "overlap matrix": {
+                key: float(num)
+                for key, num in np.ndenumerate(overlap_matrix.round(precision))
+            },
+        }
+    )

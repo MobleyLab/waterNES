@@ -2,6 +2,8 @@ import pathlib
 from contextlib import redirect_stdout
 from io import StringIO
 
+import numpy as np
+
 from water_nes.analysis.nes_free_energy import calculate_nes_free_energy
 
 
@@ -35,7 +37,7 @@ def test_calculate_nes_free_energy_regression(data_regression, file_regression):
     # Redirect stdout into string which we can test
     test_output = StringIO()
     with redirect_stdout(test_output):
-        free_energy_estimate = calculate_nes_free_energy(
+        free_energy_estimate, work = calculate_nes_free_energy(
             xvg_files_forward_transition=[xvg_forward_coulomb, xvg_forward_vdw],
             xvg_files_backward_transition=[xvg_backward_vdw, xvg_backward_coulomb],
             temperature=298.15,
@@ -46,6 +48,18 @@ def test_calculate_nes_free_energy_regression(data_regression, file_regression):
 
     # Test return value, using a reasonable precision
     # (data_regression fixture requires dict input)
-    data_regression.check(round(free_energy_estimate, 4).as_dict())
+    precision = 4
+    data_regression.check(
+        {
+            "free energy": round(free_energy_estimate, precision).as_dict(),
+            "work": {
+                outer_key: {
+                    key: float(num)
+                    for key, num in np.ndenumerate(work[outer_key].round(precision))
+                }
+                for outer_key in work
+            },
+        }
+    )
     # Test printed output
     file_regression.check(contents=test_output.getvalue())
