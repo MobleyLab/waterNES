@@ -13,9 +13,17 @@ def make_list_of_lists(
 ) -> Tuple[List[List[Any]], List[List[Any]]]:
     r"""Unify input to single type
 
-    :param list_or_list_of_lists_1: A list of items, or a list of lists of items
-    :param list_or_list_of_lists_2: A list of items, or a list of lists of items
-    :return: Both input parameters as list of lists of items
+    Parameters
+    ----------
+    list_or_list_of_lists_1 : Union[List[List[Any]], List[Any]]
+        A list of items, or a list of lists of items
+    list_or_list_of_lists_2 : Union[List[List[Any]], List[Any]]
+        A list of items, or a list of lists of items
+
+    Returns
+    -------
+    Tuple[List[List[Any]], List[List[Any]]]
+        Both input parameters as list of lists of items
     """
     if not isinstance(list_or_list_of_lists_1, List) or not isinstance(
         list_or_list_of_lists_2, List
@@ -50,8 +58,15 @@ def make_list_of_lists(
 def find_unique_list_size(dictionary: Dict[str, List[List[Any]]]) -> int:
     r"""Return the size of the innermost list
 
-    :param dictionary: A dictionary containing list of lists
-    :return: The unique size of the inner lists, if it exists
+    Parameters
+    ----------
+    dictionary : Dict[str, List[List[Any]]]
+        A dictionary containing list of lists
+
+    Returns
+    -------
+    int
+        The unique size of the inner lists, if it exists
     """
     size = None
     for key in dictionary:
@@ -66,9 +81,17 @@ def find_unique_list_size(dictionary: Dict[str, List[List[Any]]]) -> int:
 def convert_energy(energy_in_kj_mol: float, units: str) -> float:
     r"""Convert energy value from kJ/mol to different units
 
-    :param energy_in_kj_mol: Energy value in kJ/mol
-    :param units: Unit to convert to, currently supports 'kcal/mol' and 'kJ/mol'
-    :return: Energy value in new units
+    Parameters
+    ----------
+    energy_in_kj_mol : float
+        Energy value in kJ/mol
+    units : str
+        Unit to convert to, currently supports 'kcal/mol' and 'kJ/mol'
+
+    Returns
+    -------
+    float
+        Energy value in new units
     """
     if units == "kJ/mol":
         return energy_in_kj_mol
@@ -86,20 +109,26 @@ def calculate_nes_free_energy(
 ) -> FreeEnergyEstimate:
     r"""Calculate free energy estimate from swarm of non-equilibrium switching simulations
 
-    :param xvg_files_forward_transition:
+    Parameters
+    ----------
+    xvg_files_forward_transition : Union[List[List[Any]], List[Any]]
         A list of xvg files (single transition), or a list of lists of xvg files
         (multiple transitions) for stage A
-    :param xvg_files_backward_transition:
+    xvg_files_backward_transition : Union[List[List[Any]], List[Any]]
         A list of xvg files (single transition), or a list of lists of xvg files
         (multiple transitions) for stage B
-    :param temperature:
+    temperature : float
         The temperature at which the simulations were performed, in Kelvin
-    :param output_units:
+    output_units : str
         The units to return the resulting free energy, either 'kcal/mol' or 'kJ/mol'
-    :param bootstrapping_repeats:
+    bootstrapping_repeats : int
         The number of bootstrapping repeats to perform for error estimating
         (default: 0, no error estimate)
-    :return: The calculated free energy
+
+    Returns
+    -------
+    FreeEnergyEstimate
+        The calculated free energy
     """
 
     # Unify input to be of type List[List[Any]] to simplify further use

@@ -34,11 +34,11 @@ def calculate_endpoint_free_energy(
     output_units : str
         Units to print and return the free energy estimate.
         One of 'kcal/mol', 'kJ/mol', 'kT'
+
     Returns
     -------
     FreeEnergyEstimate
         The estimate of the free energy difference between the two states.
-
     """
     # Read reduced potentials, and subsample them to reduce correlation
     # Note: Slicing before calling statistical_inefficiency is currently
