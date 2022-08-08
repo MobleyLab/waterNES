@@ -1,0 +1,10 @@
+;----------------------------------------------------
+; RUN CONTROL
+;----------------------------------------------------
+define       = -DSOL_RESTRAINT_B -DMOL_NONINTERACTING
+define       = -DPOSRES_POCKET_AB -DPOSRES_POCKET_MOL_AB
+
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+init_lambda_state        = 0

@@ -1,0 +1,10 @@
+;----------------------------------------------------
+; RUN CONTROL
+;----------------------------------------------------
+define       = -DSOL_RESTRAINT_B -DMOL_INTERACTING
+define       = -DPOSRES_POCKET_AB -DPOSRES_POCKET_MOL_A -DPOSRES_POCKET_SOLVENT_A
+
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+init_lambda_state        = 3

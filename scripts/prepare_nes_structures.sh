@@ -15,6 +15,7 @@ function help() {
   echo -e "\twith the results of the production simulation of that stage"
   echo -e "-x gmx\tThe GROMACS executable to use"
   echo -e "-n num\tThe number of structures to prepare"
+  echo -m "-m num\tThe effective number of steps (useful e.g. when using -nsteps for mdrun)"
   echo
 }
 
@@ -24,11 +25,12 @@ function fail() {
 }
 
 # Get the options
-while getopts "hd:x:n:" option; do
+while getopts "hd:x:n:m:" option; do
   case $option in
     d) BASEDIR="${OPTARG}" ;;
     x) GMX="${OPTARG}" ;;
     n) NUM_STRUCTURES="${OPTARG}" ;;
+    m) NSTEPS="${OPTARG}" ;;
     h)
       help
       exit 0
@@ -54,21 +56,25 @@ which "$GMX" &>/dev/null || fail "Executable $GMX not found."
 # Make sure all relevant files and folders are present
 WORKDIR=$BASEDIR/prod
 [ -d "$WORKDIR" ] || fail "Production simulation folder $WORKDIR not found."
-TRJ=$WORKDIR/traj.trr
+TRJ=$WORKDIR/traj_comp.xtc
 [ -e "$TRJ" ] || fail "Production trajectory $TRJ not found."
 MDP=$WORKDIR/mdout.mdp
 [ -e "$MDP" ] || fail "Production mdp file $MDP not found."
 
 # Find the frequency at which we want to extract structures, do some sanity checks
-WRITE_FREQUENCY=$(grep "nstxout " "$MDP" | awk '{print $NF;}')
+WRITE_FREQUENCY=$(grep "nstxout-compressed " "$MDP" | awk '{print $NF;}')
 NUM_STEPS=$(grep "nsteps " "$MDP" | awk '{print $NF;}')
+[ -n "$NSTEPS" ] && NUM_STEPS=$NSTEPS
 NUM_FRAMES=$((NUM_STEPS / WRITE_FREQUENCY))
 echo "INFO: Production simulation with nsteps = $NUM_STEPS, nstxout = $WRITE_FREQUENCY, generated $NUM_FRAMES frames."
+NUM_STEPS=$((NUM_STEPS - 1000000))
+NUM_FRAMES=$((NUM_STEPS / WRITE_FREQUENCY))
+echo "      Skipping first 2ns (1 000 000 steps) for equilibration, using a total of $NUM_FRAMES frames for production"
 
 [ $NUM_FRAMES -ge "$NUM_STRUCTURES" ] ||
   fail "Production simulation generated only $NUM_FRAMES frame, cannot create $NUM_STRUCTURES structures."
 [ $((NUM_FRAMES % NUM_STRUCTURES)) -eq 0 ] ||
-  echo "WARNING: Production simulation generated $NUM_FRAMES, which is not a multiple of the number of structures ($NUM_STRUCTURES)."
+  echo "WARNING: Production simulation generated $NUM_FRAMES frames, which is not a multiple of the number of structures ($NUM_STRUCTURES)."
 
 # Go to simulation directory
 STARTDIR=$PWD
@@ -76,7 +82,7 @@ cd "$WORKDIR" || fail "Could not access directory $WORKDIR."
 mkdir -p frames
 
 # Extract frames
-echo "System" | $GMX trjconv -f traj.trr -o frames/frame.gro -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol ||
+echo "System" | $GMX trjconv -f traj_comp.xtc -o frames/frame.gro -b 2000 -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol ||
   fail "trjconv command failed:\n\t$GMX trjconv -f $TRJ -o frame.gro -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol"
 # Ignore the zero frame
 rm -f frames/frame0.gro

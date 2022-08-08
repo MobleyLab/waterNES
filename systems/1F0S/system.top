@@ -84,10 +84,17 @@ L4529          1   1.007947  0.00000000  A     0.25105526        0.06276
 L4530          1   1.007947  0.00000000  A     0.25105526        0.06276
 L4531          1   1.007947  0.00000000  A     0.25996425        0.06276
 L4532          1   1.007947  0.00000000  A     0.10690785      0.0656888
-HW_tip4p     1       1.008   0.0000  A   0.00000e+00  0.00000e+00
-OW_tip4p     8      16.00    0.0000  A   3.15365e-01  6.48520e-01
-MW           0       0.0000  0.0000  D   0.00000e+00  0.00000e+00
-attach        AT      0.0000  0.0000  D   0.00000e+00  0.00000e+00
+HW_tip4p       1   1.008     0.0000      A     0.00000         0.00000
+OW_tip4p       8  16.00      0.0000      A     0.315365        0.648520
+MW             0   0.0000    0.0000      D     0.00000         0.00000
+attach        AT   0.0000    0.0000      D     0.00000         0.00000
+OW_tip4pD      8  16.00      0.0000      A     0.00000         0.00000
+OW_tip4pX      8  16.00      0.0000      A     0.315365        0.648520
+attachX       AT   0.0000    0.0000      D     0.00000         0.00000
+
+[ nonbond_params ]
+; i      j         func       V(sigma)     W(eps)
+attachX  OW_tip4p  1          -0.315365    0.648520
 
 
 [ moleculetype ]
@@ -4761,7 +4768,15 @@ system1          3
  4378         H3    285    GLU    HG2   4378 -0.05480000   1.007947   ; qtot -2.945200
  4379         H3    285    GLU    HG3   4379 -0.05480000   1.007947   ; qtot -3.000000
 
+#ifdef SOL_RESTRAINT_ON
+ 4380  attachX 286   ATT   AT1   4380   0.00000   0.00000  ; dummy atom - no mass
+#endif
+#ifdef SOL_RESTRAINT_OFF
  4380  attach  286   ATT   AT1   4380   0.00000   0.00000  ; dummy atom - no mass
+#endif
+#ifdef SOL_RESTRAINT_ON_OFF
+ 4380  attachX 286   ATT   AT1   4380   0.00000   0.00000  attach   0.00000   0.00000
+#endif
 
 
 [ bonds ]
@@ -41038,7 +41053,22 @@ system1          3
 
 
 [ virtual_sites2 ]
-4380   3347 2003 1 0.2075951
+; atom_nr   atom_i   atom_j      fct        a
+     4380     3144     3338        1   0.5136
+
+; Include Position restraint file
+#ifdef POSRES
+#include "posre_protein.itp"
+#endif
+#ifdef POSRES_POCKET_ON
+#include "posre_pocket_on.itp"
+#endif
+#ifdef POSRES_POCKET_ON_OFF
+#include "posre_pocket_on_off.itp"
+#endif
+#ifdef POSRES_POCKET_OFF
+#include "posre_pocket_off.itp"
+#endif
 
 [ moleculetype ]
 ; molname       nrexcl
@@ -41046,10 +41076,18 @@ MOL             3
 
 [ atoms ]
 ; id  at type     res nr  res name  at name  cg nr  charge    mass
-  1   OW_tip4p    1       MOL       O       1       0        16.00000
+#ifdef MOL_INTERACTING
+  1   OW_tip4pX   1       MOL       O       1       0        16.00000
   2   HW_tip4p    1       MOL       H1      1       0.52      1.00800
   3   HW_tip4p    1       MOL       H2      1       0.52      1.00800
   4   MW          1       MOL       M       1      -1.04      0.00000
+#endif
+#ifdef MOL_NONINTERACTING
+  1   OW_tip4pD   1       MOL       O       1       0        16.00000
+  2   HW_tip4p    1       MOL       H1      1       0         1.00800
+  3   HW_tip4p    1       MOL       H2      1       0         1.00800
+  4   MW          1       MOL       M       1       0         0.00000
+#endif
 
 #ifndef FLEXIBLE
 
@@ -41083,6 +41121,19 @@ MOL             3
 2       1       3       4
 3       1       2       4
 4       1       2       3
+
+#ifdef POSRES_POCKET_MOL_A
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g       r[nm]    k[kJ/mol]
+   1    2          1         0.2       8368.0
+#endif
+#ifdef POSRES_POCKET_MOL_AB
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
+   1    2          1         0.2       8368.0      0.2            0
+#endif
 
 [ moleculetype ]
 ; molname       nrexcl
@@ -41126,6 +41177,19 @@ HOH             3
 3       1       2       4
 4       1       2       3
 
+
+#ifdef POSRES_POCKET_SOLVENT_A
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g       r[nm]    k[kJ/mol]
+   1    2          1       -0.35       8368.0
+#endif
+#ifdef POSRES_POCKET_SOLVENT_AB
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
+   1    2          1       -0.35       8368.0    -0.35            0
+#endif
 
 
 [ moleculetype ]
@@ -41677,6 +41741,11 @@ LIG          3
      36     13     14     38     1  0.0000000  0.6597228  3
      42     23     24     43     1  180.0000000  12.6430601  2
 
+; Include Position restraint file
+#ifdef POSRES
+#include "posre_ligand.itp"
+#endif
+
 [ system ]
 ; Name
 Generic title
@@ -41689,3 +41758,16 @@ HOH              13953
 NA                  54
 CL                  51
 LIG                  1
+
+#ifdef MOL_RESTRAINT_ON
+[ intermolecular_interactions ]
+[ bonds ]
+;      ai       aj     type     lowA     up1A     up2A       kA     lowB     up1B     up2B       kB
+     4380     4381       10      0.0      0.2      1.0   8368.0      0.0      0.2      1.0   8368.0
+#endif
+#ifdef MOL_RESTRAINT_OFF_ON
+[ intermolecular_interactions ]
+[ bonds ]
+;      ai       aj     type     lowA     up1A     up2A       kA     lowB     up1B     up2B       kB
+     4380     4381       10      0.0      0.2      1.0      0.0      0.0      0.2      1.0   8368.0
+#endif

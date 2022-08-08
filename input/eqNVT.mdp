@@ -5,14 +5,12 @@
 ;----------------------------------------------------
 ; RUN CONTROL
 ;----------------------------------------------------
-;define       = -DPOSRES
-;define                 = -DFLEXIBLE
+define       = -DPOSRES
 integrator   = sd            ; stochastic leap-frog integrator
 tinit        = 0
 nsteps       = 5000          ; 2 * 5,000 fs = 10 ps
 dt           = 0.002         ; 2 fs
-comm-mode    = Linear        ; remove center of mass translation
-nstcomm      = 100           ; frequency for center of mass motion removal
+comm-mode    = None          ; Don't remove center of mass translation with positional restraints
 
 ;----------------------------------------------------
 ; OUTPUT CONTROL
@@ -21,7 +19,7 @@ nstxout                = 0          ; don't save coordinates to .trr
 nstvout                = 0          ; don't save velocities to .trr
 nstfout                = 0            ; don't save forces to .trr
 nstxout-compressed     = 500       ; xtc compressed trajectory output every 5000 steps
-compressed-x-precision = 1000       ; precision with which to write to the compressed trajectory file
+compressed-x-precision = 10000       ; precision with which to write to the compressed trajectory file
 nstlog                 = 500       ; update log file every 10 ps
 nstenergy              = 500       ; save energies every 10 ps
 nstcalcenergy          = 100        ; calculate energies every 100 steps
@@ -40,7 +38,6 @@ continuation           = no         ; formerly known as 'unconstrained-start' - 
 ; NEIGHBOR SEARCHING
 ;----------------------------------------------------
 cutoff-scheme   = verlet
-ns_type         = grid   ; search neighboring grid cells
 nstlist         = 20     ; 20 fs (default is 10)
 rlist           = 1.2    ; short-range neighborlist cutoff (in nm)
 pbc             = xyz    ; 3D PBC
@@ -82,3 +79,15 @@ ref_p            = 1.0
 gen_vel      = yes      ; Velocity generation is on (if gen_vel is 'yes', continuation should be 'no')
 gen_seed     = -1       ; Use random seed
 gen_temp     = 298.15
+
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+free-energy              = yes
+delta_lambda             = 0
+couple-intramol          = no
+nstdhdl                  = 5000
+separate-dhdl-file       = yes
+calc-lambda-neighbors    = -1
+vdw-lambdas              = 1.0 1.0 0.0 0.0
+restraint-lambdas        = 0.0 1.0 1.0 0.0

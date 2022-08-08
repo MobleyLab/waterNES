@@ -1,12 +1,6 @@
+define       = -DSOL_RESTRAINT_ON_OFF -DMOL_RESTRAINT_OFF_ON -DMOL_INTERACTING
+
 ;----------------------------------------------------
 ; FREE ENERGY CALCULATIONS
 ;----------------------------------------------------
-free-energy              = yes
-init_lambda              = 1
-delta_lambda             = 0
-couple-moltype           = MOL
-couple-lambda0           = vdw-q
-couple-lambda1           = none
-couple-intramol          = no
-nstdhdl                  = 100
-separate-dhdl-file       = yes
+init_lambda_state        = 2
