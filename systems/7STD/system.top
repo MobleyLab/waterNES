@@ -25086,6 +25086,14 @@ system1          3
 [ virtual_sites2 ]
 2681   1000 1974 1 0.3489973
 
+; Include Position restraint file
+#ifdef POSRES
+#include "posre_protein.itp"
+#endif
+#ifdef POSRES_POCKET
+#include "posre_pocket.itp"
+#endif
+
 
 [ moleculetype ]
 ; molname       nrexcl
@@ -25132,6 +25140,14 @@ MOL             3
 4       1       2       3
 
 
+#ifdef POSRES_POCKET_MOL
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g       r[nm]  k[kJ/mol]
+   1    2          1         0.2       8368.0
+#endif
+
+
 [ moleculetype ]
 ; molname       nrexcl
 HOH             3
@@ -25173,6 +25189,13 @@ HOH             3
 2       1       3       4
 3       1       2       4
 4       1       2       3
+
+#ifdef POSRES_POCKET_SOLVENT
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g       r[nm]  k[kJ/mol]
+   1    2          1        -0.3       8368.0
+#endif
 
 
 [ moleculetype ]
@@ -25605,6 +25628,11 @@ LIG          3
      35     17     18     36     1  0.0000000  0.6597228  3
      35     17     18     37     1  0.0000000  0.6597228  3
      35     17     18     38     1  0.0000000  0.6597228  3
+
+; Include Position restraint file
+#ifdef POSRES
+#include "posre_ligand.itp"
+#endif
 
 [ system ]
 ; Name
