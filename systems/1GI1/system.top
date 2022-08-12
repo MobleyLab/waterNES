@@ -30472,8 +30472,8 @@ MOL             3
 #ifdef POSRES_POCKET_MOL
 ; Position restraint for each water oxygen
 [ position_restraints ]
-;  i funct         g       r[nm]  k[kJ/mol]
-   1    2          1         0.2       8368.0
+;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
+   1    2          1         0.2       8368.0      0.2            0
 #endif
 
 
@@ -30523,8 +30523,8 @@ HOH             3
 #ifdef POSRES_POCKET_SOLVENT
 ; Position restraint for each water oxygen
 [ position_restraints ]
-;  i funct         g       r[nm]  k[kJ/mol]
-   1    2          1        -0.3       8368.0
+;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
+   1    2          1        -0.3       8368.0     -0.3            0
 #endif
 
 
