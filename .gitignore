@@ -130,3 +130,10 @@ dmypy.json
 
 # PyCharm project files
 .idea/
+
+# Python pickle
+*.pickle
+
+# Simulation results
+systems/*/run*/
+systems/*/slurm_output/
