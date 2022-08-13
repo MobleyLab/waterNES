@@ -1811,8 +1811,6 @@ system1          3
  1564         H7     99    PHE    HE2   1564 0.14610000   1.007947   ; qtot 2.872000
  1565         H7     99    PHE     HZ   1565 0.12800000   1.007947   ; qtot 3.000000
 
- 1566  attach  100   ATT   AT1   1566   0.00000   0.00000  ; dummy atom - no mass
-
 [ bonds ]
 ;    ai     aj funct         c0         c1         c2         c3
       3      2     1   0.15220 265265.600000
@@ -14948,9 +14946,6 @@ system1          3
    1555   1552   1554   1564     4  180.0000000  4.6024000  2
    1554   1553   1555   1565     4  180.0000000  4.6024000  2
 
-[ virtual_sites2 ]
-1566   780 1310 1 0.2147264
-
 ; Include Position restraint file
 #ifdef POSRES
 #include "posre_protein_1.itp"
@@ -16630,6 +16625,8 @@ system2          3
  1563         H7     99    PHE    HE1   1563 0.14610000   1.007947   ; qtot 2.725900
  1564         H7     99    PHE    HE2   1564 0.14610000   1.007947   ; qtot 2.872000
  1565         H7     99    PHE     HZ   1565 0.12800000   1.007947   ; qtot 3.000000
+
+ 1566  attach  100   ATT   AT1   1566   0.00000   0.00000  ; dummy atom - no mass
 
 [ bonds ]
 ;    ai     aj funct         c0         c1         c2         c3
@@ -29765,6 +29762,9 @@ system2          3
    1555   1551   1553   1563     4  180.0000000  4.6024000  2
    1555   1552   1554   1564     4  180.0000000  4.6024000  2
    1554   1553   1555   1565     4  180.0000000  4.6024000  2
+
+[ virtual_sites2 ]
+1566   780 1310 1 0.2147264
 
 ; Include Position restraint file
 #ifdef POSRES
