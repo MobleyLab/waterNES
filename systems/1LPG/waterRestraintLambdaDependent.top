@@ -1,4 +1,4 @@
-[ intermolecular_interactions]
-[bonds]
-; ai     aj    type   bA      kA     bB      kB
- 4426   4427  6      0.167   8368.0 0.167   0.0
+[ intermolecular_interactions ]
+[ bonds ]
+;      ai       aj     type     lowA     up1A     up2A       kA     lowB     up1B     up2B       kB
+     4426     4427       10      0.0      0.2      1.0   8368.0      0.0      0.2      1.0      0.0
