@@ -29736,7 +29736,8 @@ system1          3
    3119   3118   3120   3130     4  180.0000000  4.6024000  2
 
 [ virtual_sites2 ]
-1566   780 1310 1 0.2147264
+; atom_nr   atom_i   atom_j      fct        a
+     3131      773     2339        1   0.5190
 
 ; Include Position restraint file
 #ifdef POSRES
@@ -29745,7 +29746,6 @@ system1          3
 #ifdef POSRES_POCKET
 #include "posre_pocket.itp"
 #endif
-
 
 [ moleculetype ]
 ; molname       nrexcl

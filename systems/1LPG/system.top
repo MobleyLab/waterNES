@@ -41499,7 +41499,8 @@ system1          3
    4412   4414   4413   4418     4  180.0000000  43.9320000  2
 
 [ virtual_sites2 ]
-4426   4108 2767 1 0.2046659
+; atom_nr   atom_i   atom_j      fct        a
+     4426     3905     4098        1   0.5213
 
 ; Include Position restraint file
 #ifdef POSRES
