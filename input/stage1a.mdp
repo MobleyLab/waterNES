@@ -1,0 +1,11 @@
+;----------------------------------------------------
+; RUN CONTROL
+;----------------------------------------------------
+define       = -DSOL_RESTRAINT_AB -DMOL_RESTRAINT_AB -DMOL_INTERACTING
+define       = -DPOSRES_POCKET_AB
+comm-mode    = None          ; Don't remove center of mass translation with positional restraints
+
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+init_lambda_state        = 0

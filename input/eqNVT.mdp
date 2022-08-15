@@ -5,14 +5,12 @@
 ;----------------------------------------------------
 ; RUN CONTROL
 ;----------------------------------------------------
-;define       = -DPOSRES
-;define                 = -DFLEXIBLE
+define       = -DPOSRES
 integrator   = sd            ; stochastic leap-frog integrator
 tinit        = 0
 nsteps       = 5000          ; 2 * 5,000 fs = 10 ps
 dt           = 0.002         ; 2 fs
-comm-mode    = Linear        ; remove center of mass translation
-nstcomm      = 100           ; frequency for center of mass motion removal
+comm-mode    = None          ; Don't remove center of mass translation with positional restraints
 
 ;----------------------------------------------------
 ; OUTPUT CONTROL
@@ -40,7 +38,6 @@ continuation           = no         ; formerly known as 'unconstrained-start' - 
 ; NEIGHBOR SEARCHING
 ;----------------------------------------------------
 cutoff-scheme   = verlet
-ns_type         = grid   ; search neighboring grid cells
 nstlist         = 20     ; 20 fs (default is 10)
 rlist           = 1.2    ; short-range neighborlist cutoff (in nm)
 pbc             = xyz    ; 3D PBC
@@ -82,3 +79,16 @@ ref_p            = 1.0
 gen_vel      = yes      ; Velocity generation is on (if gen_vel is 'yes', continuation should be 'no')
 gen_seed     = -1       ; Use random seed
 gen_temp     = 298.15
+
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+free-energy              = yes
+delta_lambda             = 0
+couple-intramol          = no
+nstdhdl                  = 5000
+separate-dhdl-file       = yes
+calc-lambda-neighbors    = -1
+bonded-lambdas           = 1.0 0.0 0.0 0.0
+vdw-lambdas              = 1.0 1.0 0.0 0.0
+restraint-lambdas        = 1.0 1.0 1.0 0.0

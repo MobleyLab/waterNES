@@ -5,12 +5,11 @@
 ;----------------------------------------------------
 ; RUN CONTROL & MINIMIZATION
 ;----------------------------------------------------
-;define       = -DPOSRES
-;define                 = -DFLEXIBLE
 integrator             = steep
 nsteps                 = 50000
 emtol                  = 100
 emstep                 = 0.01
+comm-mode              = Linear
 nstcomm                = 100
 
 ;----------------------------------------------------
@@ -30,7 +29,6 @@ nstcalcenergy          = 100
 ; NEIGHBOR SEARCHING
 ;----------------------------------------------------
 cutoff-scheme          = verlet
-ns-type                = grid
 nstlist                = 10
 pbc                    = xyz
 rlist                  = 1.2
@@ -67,3 +65,16 @@ DispCorr                = EnerPres
 tcoupl              = no
 pcoupl              = no
 gen_vel             = no
+
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+free-energy              = yes
+delta_lambda             = 0
+couple-intramol          = no
+nstdhdl                  = 5000
+separate-dhdl-file       = yes
+calc-lambda-neighbors    = -1
+bonded-lambdas           = 1.0 0.0 0.0 0.0
+vdw-lambdas              = 1.0 1.0 0.0 0.0
+restraint-lambdas        = 1.0 1.0 1.0 0.0

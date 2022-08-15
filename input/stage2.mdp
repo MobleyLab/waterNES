@@ -1,11 +1,10 @@
 ;----------------------------------------------------
+; RUN CONTROL
+;----------------------------------------------------
+define       = -DSOL_RESTRAINT_AB -DMOL_RESTRAINT_AB -DMOL_INTERACTING
+nstcomm      = 500           ; frequency for center of mass motion removal
+
+;----------------------------------------------------
 ; FREE ENERGY CALCULATIONS
 ;----------------------------------------------------
-free-energy              = yes
-init_lambda_state         = 0
-delta_lambda             = 0
-couple-intramol          = no
-nstdhdl                  = 100
-bonded-lambdas           = 0.0 1.0
-separate-dhdl-file       = yes
-calc-lambda-neighbors    = -1
+init_lambda_state        = 1

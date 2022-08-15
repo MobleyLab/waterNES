@@ -1,0 +1,5 @@
+[ position_restraints ]
+; idx fun        fcx        fcy        fcz
+   53   1       1000       1000       1000
+   95   1       1000       1000       1000
+  151   1       1000       1000       1000

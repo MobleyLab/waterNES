@@ -54,21 +54,24 @@ which "$GMX" &>/dev/null || fail "Executable $GMX not found."
 # Make sure all relevant files and folders are present
 WORKDIR=$BASEDIR/prod
 [ -d "$WORKDIR" ] || fail "Production simulation folder $WORKDIR not found."
-TRJ=$WORKDIR/traj.trr
+TRJ=$WORKDIR/traj_comp.xtc
 [ -e "$TRJ" ] || fail "Production trajectory $TRJ not found."
 MDP=$WORKDIR/mdout.mdp
 [ -e "$MDP" ] || fail "Production mdp file $MDP not found."
 
 # Find the frequency at which we want to extract structures, do some sanity checks
-WRITE_FREQUENCY=$(grep "nstxout " "$MDP" | awk '{print $NF;}')
+WRITE_FREQUENCY=$(grep "nstxout-compressed " "$MDP" | awk '{print $NF;}')
 NUM_STEPS=$(grep "nsteps " "$MDP" | awk '{print $NF;}')
 NUM_FRAMES=$((NUM_STEPS / WRITE_FREQUENCY))
 echo "INFO: Production simulation with nsteps = $NUM_STEPS, nstxout = $WRITE_FREQUENCY, generated $NUM_FRAMES frames."
+NUM_STEPS=$((NUM_STEPS - 1000000))
+NUM_FRAMES=$((NUM_STEPS / WRITE_FREQUENCY))
+echo "      Skipping first 2ns (1 000 000 steps) for equilibration, using a total of $NUM_FRAMES frames for production"
 
 [ $NUM_FRAMES -ge "$NUM_STRUCTURES" ] ||
   fail "Production simulation generated only $NUM_FRAMES frame, cannot create $NUM_STRUCTURES structures."
 [ $((NUM_FRAMES % NUM_STRUCTURES)) -eq 0 ] ||
-  echo "WARNING: Production simulation generated $NUM_FRAMES, which is not a multiple of the number of structures ($NUM_STRUCTURES)."
+  echo "WARNING: Production simulation generated $NUM_FRAMES frames, which is not a multiple of the number of structures ($NUM_STRUCTURES)."
 
 # Go to simulation directory
 STARTDIR=$PWD
@@ -76,7 +79,7 @@ cd "$WORKDIR" || fail "Could not access directory $WORKDIR."
 mkdir -p frames
 
 # Extract frames
-echo "System" | $GMX trjconv -f traj.trr -o frames/frame.gro -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol ||
+echo "System" | $GMX trjconv -f traj.trr -o frames/frame.gro -b 2000 -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol ||
   fail "trjconv command failed:\n\t$GMX trjconv -f $TRJ -o frame.gro -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol"
 # Ignore the zero frame
 rm -f frames/frame0.gro

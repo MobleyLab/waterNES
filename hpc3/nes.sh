@@ -17,7 +17,7 @@
 # want to use is available) or by a pointer to any other GROAMCS installation.
 # The next line is telling shellcheck not to worry about the sourced file.
 # shellcheck source=/dev/null
-source ~/bin/gmx2022.1/bin/GMXRC
+source ~/bin/gmx2022.2+/bin/GMXRC
 
 # Run NES simulation. The simulation number is defined by the Slurm array task ID.
 bash "$RUN_SCRIPT" -d "$SYSTEM_DIR"/stage"$STAGE" -t "$SYSTEM_DIR" -x gmx \

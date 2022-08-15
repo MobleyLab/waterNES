@@ -1,7 +1,10 @@
 #!/bin/bash
 
+IMPLEMENTED_STAGES="1 1a 1b 1c 1d 2 2a 3 3a 4a 4b 5a 5b 6 6a 7 7a 8b 8c 8d"
+IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
+
 function usage() {
-  echo "USAGE: $(basename "$0") [-h] -d dir -t dir [-c crd] -x gmx [-o opts] -s N -p {min,eqNVT,eqNPT,prod,NES} [-n N]"
+  echo "USAGE: $(basename "$0") [-h] -d dir -t dir [-c crd] -x gmx [-o opts] -s N -p {min,eqNVT,eqNPT,prod,NES} [-n N] [-m N]"
 }
 
 function help() {
@@ -17,15 +20,17 @@ function help() {
   echo -e "-x gmx\tThe GROMACS executable to use"
   echo -e "-o opts\tThe run options, e.g. \"-nt 16 -ntomp 4\", optional"
   echo -e "-s N\tThe stage to run, one of:"
-  echo -e "\t1: Stage with fully interacting, non-restrained water"
-  echo -e "\t2: Stage with fully interacting, restrained water"
-  echo -e "\t3: Stage with non-interacting, restrained water"
-  echo -e "-p {min,eqNVT,eqNPT,prod,NES}"
-  echo -e "\tThe simulation phase to run, one or more of: min, eqNVT, eqNPT, prod, NES"
+  # echo -e "\t1: Stage with fully interacting, non-restrained water"
+  # echo -e "\t2: Stage with fully interacting, restrained water"
+  # echo -e "\t3: Stage with non-interacting, restrained water"
+  echo -e "\t$IMPLEMENTED_STAGES"
+  echo -e "-p {min,eqNVT,eqNPT,prod}" #,NES}"
+  echo -e "\tThe simulation phase to run, one or more of: $IMPLEMENTED_PHASES"
   echo -e "\tSeparate different phases by spaces, e.g. -p \"min eqNVT eqNPT\""
-  echo -e "\tNote: The NES phase is only available for stages 2 and 3"
-  echo -e "-n N\tThe run number for the NES phase"
-  echo -e "\tMandatory for the NES phase, ignored otherwise"
+  # echo -e "\tNote: The NES phase is only available for stages 2 and 3"
+  # echo -e "-n N\tThe run number for the NES phase"
+  # echo -e "\tMandatory for the NES phase, ignored otherwise"
+  echo -e "-m N\tThe number of steps to run during production, optional"
   echo
 }
 
@@ -34,8 +39,9 @@ function fail() {
   exit 1
 }
 
+NUM_STEPS=-2
 # Get the options
-while getopts "d:t:c:x:o:s:p:n:h" option; do
+while getopts "d:t:c:x:o:s:p:n:m:h" option; do
   case $option in
     d) BASEDIR="${OPTARG}" ;;
     t) TOPDIR="${OPTARG}" ;;
@@ -45,6 +51,7 @@ while getopts "d:t:c:x:o:s:p:n:h" option; do
     s) STAGE="${OPTARG}" ;;
     p) PHASES="${OPTARG}" ;;
     n) RUN_NUMBER="${OPTARG}" ;;
+    m) NUM_STEPS="${OPTARG}" ;;
     h)
       help
       exit 0
@@ -55,9 +62,6 @@ while getopts "d:t:c:x:o:s:p:n:h" option; do
       ;;
   esac
 done
-
-IMPLEMENTED_STAGES="1 2 3"
-IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
 
 # Check presence of positional arguments
 if [ -z "$BASEDIR" ] || [ -z "$TOPDIR" ] || [ -z "$GMX" ] || [ -z "$STAGE" ] || [ -z "$PHASES" ]; then
@@ -103,9 +107,7 @@ TOPDIR=$(readlink -f "$TOPDIR")
 [ ! -z "$CRD" ] && CRD=$(readlink -f "$CRD")
 
 # Check presence of needed topology files for all stages and phases
-for file in system waterRestraintLambdaIndependent waterRestraintLambdaDependent; do
-  [ -e "$TOPDIR"/$file.top ] || fail "File $file.top not found in directory $TOPDIR"
-done
+[ -e "$TOPDIR"/system.top ] || fail "File system.top not found in directory $TOPDIR"
 
 # Check presence of mdp input files for all stages and phases
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -118,21 +120,51 @@ for phase in $IMPLEMENTED_PHASES; do
   [ -e "$INPUTDIR"/"$phase".mdp ] || fail "Input file $INPUTDIR/$phase.mdp is missing."
 done
 
+# Function that takes care of multiple `define = ...` statements in mdp files
+function unify_define_statement() {
+  local MDP=$1
+  # Check whether there's more than one define statement
+  num_define_statements=$(egrep '^define *=' $MDP | wc -l)
+  [ "$num_define_statements" -lt 2 ] && return
+  # Collect existing define statements
+  define_statements=""
+  while read -r line; do
+    define_statements="${define_statements} ${line##*=}"
+  done < <(grep -E '^define *=' "$MDP")
+  # Remove existing define statements
+  sed -i.bak '/^define *=/d' "$MDP"
+  rm "$MDP.bak"
+  # Write consolidated define statement
+  echo ""
+  echo "; Consolidated define statement" >> "$MDP"
+  echo "define = $define_statements" >> "$MDP"
+}
+
 # Function that runs grompp and mdrun for given directory, mdp file, and gro file
 function run_simulation() {
   local WORKDIR=$1
   local MDP=$2
   local GRO=$3
   local TOP=$4
+  local WARNINGS=$5
+  local POSRES=$6
+  local NSTEPS=$7
 
   STARTDIR=$PWD
 
   cd "$WORKDIR" || fail "Could not access directory $WORKDIR."
 
-  $GMX grompp -c "$GRO" -p "$TOP" -f "$MDP" ||
-    fail "grompp command failed:\n\t$GMX grompp -c \"$GRO\" -p \"$TOP\" -f \"$MDP\"\n\t(wd: $PWD)"
-  eval "$GMX mdrun $RUN_PARAMS" ||
-    fail "mdrun command failed:\n\t$GMX mdrun \"$RUN_PARAMS\"\n\t(wd: $PWD)"
+  if [ -n "$POSRES" ]; then
+    [ -e "$POSRES" ] || fail "Positional restraint file $POSRES is missing."
+    POSRES="-r $POSRES"
+  fi
+
+  GROMPP_CMD="$GMX grompp -c $GRO -p $TOP -f $MDP -maxwarn $WARNINGS $POSRES"
+  eval "$GROMPP_CMD" ||
+    fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
+  MDRUN_CMD="$GMX mdrun -nsteps $NSTEPS $RUN_PARAMS"
+  eval "$MDRUN_CMD" ||
+    fail "mdrun command failed:\n\t$MDRUN_CMD\n\t(wd: $PWD)"
 
   cd "$STARTDIR" || fail "Could not access directory $STARTDIR."
 }
@@ -170,32 +202,45 @@ for phase in $PHASES; do
     cp "$MDP" "$MDP2"
     cat "$INPUTDIR"/stage"${STAGE}"NES1.mdp >>"$MDP" || fail "Error creating input file"
     cat "$INPUTDIR"/stage"${STAGE}"NES2.mdp >>"$MDP2" || fail "Error creating input file"
+    unify_define_statement "$MDP2"
+  fi
+
+  unify_define_statement "$MDP"
+
+  stage_modifier=${STAGE:1:1}
+  if [ "$phase" = "prod" ]; then
+    if [ -n "$stage_modifier" ]; then
+      cat "$INPUTDIR"/stageNxprod.mdp >>"$MDP" || fail "Error creating input file"
+    else
+      cat "$INPUTDIR"/stageNprod.mdp >>"$MDP" || fail "Error creating input file"
+    fi
   fi
 
   # Create topology file for phase & stage
-  TOP=$WORKDIR/topology.top
-  cp "$TOPDIR"/system.top "$TOP" || fail "Error creating topology file"
-  if [ "$STAGE" -eq 3 ] || [ "$phase" == "NES" ]; then
-    # Stage 3 is running with full restraints, but doesn't need to calculate dH/dL
-    # When using NES phase, also stage 2 doesn't need to calculate dH/dL for the restraint
-    # If using the lambda dependent restraint, the NES simulations would turn on / off the restraint
-    RESTRAINT_FILE=waterRestraintLambdaIndependent.top
-  else
-    # Stage 1 is running at lambda point that has no restraint
-    # Stage 2 is running at lambda point with restraints, calculating dH/dL
-    RESTRAINT_FILE=waterRestraintLambdaDependent.top
+  TOP="$TOPDIR"/system.top
+
+  [ "$phase" = "min" ] && WARNINGS=1 || WARNINGS=0
+
+  POSRES=""
+  if [ -n "$stage_modifier" ]; then
+    if [ "$phase" != "min" ]; then
+      POSRES="$TOPDIR/min/restraint.gro"
+    fi
   fi
-  echo >>"$TOP"
-  cat "$TOPDIR"/$RESTRAINT_FILE >>"$TOP" || fail "Error creating topology file"
+  if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then
+    POSRES="$BASEDIR/min/confout.gro"
+  fi
+
+  [ "$phase" = "prod" ] && NSTEPS=$NUM_STEPS || NSTEPS=-2
 
   if [ "$phase" != "NES" ]; then
-    run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP"
+    run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
   else
-    # For NES, we run two simulations, were the second starts from
+    # For NES, we run two simulations, where the second starts from
     # the final configuration of the first
     mkdir -p "$WORKDIR"/1 "$WORKDIR"/2
-    run_simulation "$WORKDIR"/1 "$MDP" "$GRO" "$TOP"
-    run_simulation "$WORKDIR"/2 "$MDP2" "$WORKDIR"/1/confout.gro "$TOP"
+    run_simulation "$WORKDIR"/1 "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
+    run_simulation "$WORKDIR"/2 "$MDP2" "$WORKDIR"/1/confout.gro "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
   fi
 
 done

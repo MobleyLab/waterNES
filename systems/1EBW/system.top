@@ -138,6 +138,7 @@ HW_tip4p       1   1.008     0.0000      A     0.00000         0.00000
 OW_tip4p       8  16.00      0.0000      A     0.315365        0.648520
 MW             0   0.0000    0.0000      D     0.00000         0.00000
 attach        AT   0.0000    0.0000      D     0.00000         0.00000
+OW_tip4pD      8  16.00      0.0000      A     0.00000         0.00000
 OW_tip4pX      8  16.00      0.0000      A     0.315365        0.648520
 attachX       AT   0.0000    0.0000      D     0.00000         0.00000
 
@@ -3481,7 +3482,15 @@ system1          3
  3129         H7    198    PHE    HE2   3129 0.14610000   1.007947   ; qtot 5.872000
  3130         H7    198    PHE     HZ   3130 0.12800000   1.007947   ; qtot 6.000000
 ; residue  199 ATT rtp ATT q 0.0
+#ifdef SOL_RESTRAINT_A
+ 3131     attachX   199    ATT    AT1   3131 0.00000000   0.000000   ; qtot 6.000000
+#endif
+#ifdef SOL_RESTRAINT_B
  3131     attach    199    ATT    AT1   3131 0.00000000   0.000000   ; qtot 6.000000
+#endif
+#ifdef SOL_RESTRAINT_AB
+ 3131     attachX   199    ATT    AT1   3131 0.00000000   0.000000  attach   0.00000   0.00000
+#endif
 
 [ bonds ]
 ;    ai     aj funct         c0         c1         c2         c3
@@ -29743,14 +29752,20 @@ system1          3
 
 [ virtual_sites2 ]
 ; atom_nr   atom_i   atom_j      fct        a
-     3131      773     2339        1   0.5190
+     3131      774     2339        1   0.4892
 
 ; Include Position restraint file
 #ifdef POSRES
 #include "posre_protein.itp"
 #endif
-#ifdef POSRES_POCKET
-#include "posre_pocket.itp"
+#ifdef POSRES_POCKET_A
+#include "posre_pocket_a.itp"
+#endif
+#ifdef POSRES_POCKET_AB
+#include "posre_pocket_ab.itp"
+#endif
+#ifdef POSRES_POCKET_B
+#include "posre_pocket_b.itp"
 #endif
 
 [ moleculetype ]
@@ -29759,10 +29774,18 @@ MOL             3
 
 [ atoms ]
 ; id  at type     res nr  res name  at name  cg nr  charge    mass
+#ifdef MOL_INTERACTING
   1   OW_tip4pX   1       MOL       O       1       0        16.00000
   2   HW_tip4p    1       MOL       H1      1       0.52      1.00800
   3   HW_tip4p    1       MOL       H2      1       0.52      1.00800
   4   MW          1       MOL       M       1      -1.04      0.00000
+#endif
+#ifdef MOL_NONINTERACTING
+  1   OW_tip4pD   1       MOL       O       1       0        16.00000
+  2   HW_tip4p    1       MOL       H1      1       0         1.00800
+  3   HW_tip4p    1       MOL       H2      1       0         1.00800
+  4   MW          1       MOL       M       1       0         0.00000
+#endif
 
 #ifndef FLEXIBLE
 
@@ -29796,7 +29819,13 @@ MOL             3
 3       1       2       4
 4       1       2       3
 
-#ifdef POSRES_POCKET_MOL
+#ifdef POSRES_POCKET_MOL_A
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g       r[nm]    k[kJ/mol]
+   1    2          1         0.2       8368.0
+#endif
+#ifdef POSRES_POCKET_MOL_AB
 ; Position restraint for each water oxygen
 [ position_restraints ]
 ;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
@@ -29847,11 +29876,17 @@ HOH             3
 3       1       2       4
 4       1       2       3
 
-#ifdef POSRES_POCKET_SOLVENT
+#ifdef POSRES_POCKET_SOLVENT_A
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct         g       r[nm]    k[kJ/mol]
+   1    2          1       -0.35       8368.0
+#endif
+#ifdef POSRES_POCKET_SOLVENT_AB
 ; Position restraint for each water oxygen
 [ position_restraints ]
 ;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
-   1    2          1        -0.3       8368.0     -0.3            0
+   1    2          1       -0.35       8368.0    -0.35            0
 #endif
 
 
@@ -30884,3 +30919,16 @@ HOH              11687
 NA                  43
 CL                  49
 LIG                  1
+
+#ifdef MOL_RESTRAINT_A
+[ intermolecular_interactions ]
+[ bonds ]
+;      ai       aj     type      low      up1      up2        k
+     3131     3132       10      0.0      0.2      1.0   8368.0
+#endif
+#ifdef MOL_RESTRAINT_AB
+[ intermolecular_interactions ]
+[ bonds ]
+;      ai       aj     type     lowA     up1A     up2A       kA     lowB     up1B     up2B       kB
+     3131     3132       10      0.0      0.2      1.0   8368.0      0.0      0.2      1.0      0.0
+#endif
