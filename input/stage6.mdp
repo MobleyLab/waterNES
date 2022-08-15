@@ -1,8 +1,4 @@
-;----------------------------------------------------
-; RUN CONTROL
-;----------------------------------------------------
 define       = -DSOL_RESTRAINT_AB -DMOL_RESTRAINT_AB -DMOL_NONINTERACTING
-nstcomm      = 500           ; frequency for center of mass motion removal
 
 ;----------------------------------------------------
 ; FREE ENERGY CALCULATIONS

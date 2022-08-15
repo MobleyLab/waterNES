@@ -9,7 +9,6 @@ integrator   = sd            ; stochastic leap-frog integrator
 tinit        = 0
 nsteps       = 10000000      ; 10 M steps - 20ns
 dt           = 0.002         ; 2 fs
-nstcomm      = 500           ; frequency for center of mass motion removal
 
 ;----------------------------------------------------
 ; OUTPUT CONTROL
