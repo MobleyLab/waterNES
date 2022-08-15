@@ -3562,10 +3562,8 @@ system1          3
  3223  attach  224   ATT   AT1   3223   0.00000   0.00000  ; dummy atom - no mass
 #endif
 #ifdef SOL_RESTRAINT_AB
-#ifdef SOL_RESTRAINT_AB
  3223  attachX 224   ATT   AT1   3223   0.00000   0.00000  attach   0.00000   0.00000
 #endif
-
 
 
 [ bonds ]
