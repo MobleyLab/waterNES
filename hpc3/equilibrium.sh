@@ -25,4 +25,6 @@ bash "$RUN_SCRIPT" -d "$SYSTEM_DIR"/run"$RUN"/stage"$STAGE" -t "$SYSTEM_DIR" \
   -c "$SYSTEM_DIR"/system.gro -x gmx -o "-ntomp $SLURM_CPUS_PER_TASK" \
   -s "$STAGE" -p "eqNVT eqNPT prod" -m 3000000 || exit 1
 
-bash "$STRUCTURES_SCRIPT" -d "$SYSTEM_DIR"/stage"$STAGE" -x gmx -n "$NUM_NES"
+if [ "${STAGE:0:1}" -ne ] && [ "${STAGE:0:1}" -ne 8 ]; then
+    bash "$STRUCTURES_SCRIPT" -d "$SYSTEM_DIR"/run"$RUN"/stage"$STAGE" -x gmx -n "$NUM_NES"
+fi

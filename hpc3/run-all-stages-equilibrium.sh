@@ -17,7 +17,7 @@ RUN_SCRIPT=scripts/run_simulations.sh
 [ -e $RUN_SCRIPT ] || fail "Run script $RUN_SCRIPT not found"
 STRUCTURES_SCRIPT=scripts/prepare_nes_structures.sh
 [ -e $STRUCTURES_SCRIPT ] || fail "Structures script $STRUCTURES_SCRIPT not found"
-EQUILIBRIUM_SCRIPT=hpc3/equilibrium.sh
+EQUILIBRIUM_SCRIPT=hpc3/prod.sh
 [ -e $EQUILIBRIUM_SCRIPT ] || fail "Run script $EQUILIBRIUM_SCRIPT not found"
 NES_SCRIPT=hpc3/nes.sh
 [ -e $NES_SCRIPT ] || fail "Run script $NES_SCRIPT not found"
@@ -36,9 +36,10 @@ for system in "$@"; do
   mkdir -p "$SYSTEM_DIR"/slurm_output
 
   # Loop over stages 1, 2, and 3
-  for stage in 1; do
+  # for stage in 1 1a 2 2a 3 3a 4a 4b 5a 5b 6 6a 7 7a 8b; do
+  for stage in 1a 2a 3a 4a 4b 5a 5b 6a 7a 8b; do
     # Submit equilibrium run (minimization, equilibration and production runs)
-    jobidEq=$(sbatch --parsable --job-name="$system"-stage$stage-minimization \
+    jobidEq=$(sbatch --parsable --job-name="$system"-stage$stage-equilibrium \
       --error="$SYSTEM_DIR"/slurm_output/equilibrium-s$stage.err \
       --output="$SYSTEM_DIR"/slurm_output/equilibrium-s$stage.out \
       --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE=$stage,STRUCTURES_SCRIPT=$STRUCTURES_SCRIPT,NUM_NES=$NUM_NES,RUN=$RUN \

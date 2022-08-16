@@ -79,7 +79,7 @@ cd "$WORKDIR" || fail "Could not access directory $WORKDIR."
 mkdir -p frames
 
 # Extract frames
-echo "System" | $GMX trjconv -f traj.trr -o frames/frame.gro -b 2000 -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol ||
+echo "System" | $GMX trjconv -f traj_comp.xtc -o frames/frame.gro -b 2000 -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol ||
   fail "trjconv command failed:\n\t$GMX trjconv -f $TRJ -o frame.gro -sep -skip $((NUM_FRAMES / NUM_STRUCTURES)) -ur compact -pbc mol"
 # Ignore the zero frame
 rm -f frames/frame0.gro

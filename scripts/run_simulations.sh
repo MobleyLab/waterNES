@@ -224,7 +224,7 @@ for phase in $PHASES; do
   POSRES=""
   if [ -n "$stage_modifier" ]; then
     if [ "$phase" != "min" ]; then
-      POSRES="$TOPDIR/min/restraint.gro"
+      POSRES="$BASEDIR/min/restraint.gro"
     fi
   fi
   if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then

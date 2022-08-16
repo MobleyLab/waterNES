@@ -72,6 +72,7 @@ pcoupltype       = isotropic            ; uniform scaling of box vectors
 tau_p            = 1.0                    ; time constant (ps)
 ref_p            = 1.01325                  ; reference pressure (bar)
 compressibility  = 4.5e-05              ; isothermal compressibility of water (bar^-1)
+refcoord_scaling = com
 
 ;----------------------------------------------------
 ; VELOCITY GENERATION
