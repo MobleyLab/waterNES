@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMPLEMENTED_STAGES="1 1a 1b 1c 1d 2 2a 3 3a 4a 4b 5a 5b 6 6a 7 7a 8b 8c 8d"
+IMPLEMENTED_STAGES="1 1a 1b 2 2a 3 3a 4a 4b 5a 5b 6 6a 7 7a 8b"
 IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
 
 function usage() {
@@ -24,12 +24,12 @@ function help() {
   # echo -e "\t2: Stage with fully interacting, restrained water"
   # echo -e "\t3: Stage with non-interacting, restrained water"
   echo -e "\t$IMPLEMENTED_STAGES"
-  echo -e "-p {min,eqNVT,eqNPT,prod}" #,NES}"
+  echo -e "-p {min,eqNVT,eqNPT,prod,NES}"
   echo -e "\tThe simulation phase to run, one or more of: $IMPLEMENTED_PHASES"
   echo -e "\tSeparate different phases by spaces, e.g. -p \"min eqNVT eqNPT\""
-  # echo -e "\tNote: The NES phase is only available for stages 2 and 3"
-  # echo -e "-n N\tThe run number for the NES phase"
-  # echo -e "\tMandatory for the NES phase, ignored otherwise"
+  echo -e "\tNote: The NES phase is only available for stages 2 through 7"
+  echo -e "-n N\tThe run number for the NES phase"
+  echo -e "\tMandatory for the NES phase, ignored otherwise"
   echo -e "-m N\tThe number of steps to run during production, optional"
   echo
 }
@@ -160,8 +160,16 @@ function run_simulation() {
   fi
 
   GROMPP_CMD="$GMX grompp -c $GRO -p $TOP -f $MDP -maxwarn $WARNINGS $POSRES"
-  eval "$GROMPP_CMD" ||
-    fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
+  eval "$GROMPP_CMD"
+  SUCCESS=$?
+  COUNTER=1
+  while [ $SUCCESS -ne 0 ] && [ $COUNTER -lt 3 ]; do
+      sleep 30
+      eval "$GROMPP_CMD"
+      SUCCESS=$?
+      COUNTER=$((COUNTER+1))
+  done
+  [ $SUCCESS -eq 0 ] || fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
   MDRUN_CMD="$GMX mdrun -nsteps $NSTEPS $RUN_PARAMS"
   eval "$MDRUN_CMD" ||
     fail "mdrun command failed:\n\t$MDRUN_CMD\n\t(wd: $PWD)"
@@ -198,17 +206,12 @@ for phase in $PHASES; do
   if [ "$phase" != "NES" ]; then
     cat "$INPUTDIR"/stage"$STAGE".mdp >>"$MDP" || fail "Error creating input file"
   else
-    MDP2=$WORKDIR/input2.mdp
-    cp "$MDP" "$MDP2"
-    cat "$INPUTDIR"/stage"${STAGE}"NES1.mdp >>"$MDP" || fail "Error creating input file"
-    cat "$INPUTDIR"/stage"${STAGE}"NES2.mdp >>"$MDP2" || fail "Error creating input file"
-    unify_define_statement "$MDP2"
+    cat "$INPUTDIR"/stage"${STAGE}"NES.mdp >>"$MDP" || fail "Error creating input file"
   fi
-
   unify_define_statement "$MDP"
 
   stage_modifier=${STAGE:1:1}
-  if [ "$phase" = "prod" ]; then
+  if [ "$phase" = "prod" ] || [ "$phase" = "NES" ]; then
     if [ -n "$stage_modifier" ]; then
       cat "$INPUTDIR"/stageNxprod.mdp >>"$MDP" || fail "Error creating input file"
     else
@@ -233,14 +236,6 @@ for phase in $PHASES; do
 
   [ "$phase" = "prod" ] && NSTEPS=$NUM_STEPS || NSTEPS=-2
 
-  if [ "$phase" != "NES" ]; then
-    run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
-  else
-    # For NES, we run two simulations, where the second starts from
-    # the final configuration of the first
-    mkdir -p "$WORKDIR"/1 "$WORKDIR"/2
-    run_simulation "$WORKDIR"/1 "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
-    run_simulation "$WORKDIR"/2 "$MDP2" "$WORKDIR"/1/confout.gro "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
-  fi
+  run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
 
 done
