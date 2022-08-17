@@ -1,0 +1,7 @@
+define       = -DSOL_RESTRAINT_B -DMOL_RESTRAINT_A -DMOL_INTERACTING
+
+;----------------------------------------------------
+; FREE ENERGY CALCULATIONS
+;----------------------------------------------------
+init_lambda              = 1
+delta_lambda             = -0.000008  ;1/nsteps
