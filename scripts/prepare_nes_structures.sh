@@ -15,6 +15,7 @@ function help() {
   echo -e "\twith the results of the production simulation of that stage"
   echo -e "-x gmx\tThe GROMACS executable to use"
   echo -e "-n num\tThe number of structures to prepare"
+  echo -m "-m num\tThe effective number of steps (useful e.g. when using -nsteps for mdrun)"
   echo
 }
 
@@ -24,11 +25,12 @@ function fail() {
 }
 
 # Get the options
-while getopts "hd:x:n:" option; do
+while getopts "hd:x:n:m:" option; do
   case $option in
     d) BASEDIR="${OPTARG}" ;;
     x) GMX="${OPTARG}" ;;
     n) NUM_STRUCTURES="${OPTARG}" ;;
+    m) NSTEPS="${OPTARG}" ;;
     h)
       help
       exit 0
@@ -62,6 +64,7 @@ MDP=$WORKDIR/mdout.mdp
 # Find the frequency at which we want to extract structures, do some sanity checks
 WRITE_FREQUENCY=$(grep "nstxout-compressed " "$MDP" | awk '{print $NF;}')
 NUM_STEPS=$(grep "nsteps " "$MDP" | awk '{print $NF;}')
+[ -n "$NSTEPS" ] && NUM_STEPS=$NSTEPS
 NUM_FRAMES=$((NUM_STEPS / WRITE_FREQUENCY))
 echo "INFO: Production simulation with nsteps = $NUM_STEPS, nstxout = $WRITE_FREQUENCY, generated $NUM_FRAMES frames."
 NUM_STEPS=$((NUM_STEPS - 1000000))

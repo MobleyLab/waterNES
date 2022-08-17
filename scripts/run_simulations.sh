@@ -222,13 +222,13 @@ for phase in $PHASES; do
   [ "$phase" = "min" ] && WARNINGS=1 || WARNINGS=0
 
   POSRES=""
+  if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then
+    POSRES="$BASEDIR/min/confout.gro"
+  fi
   if [ -n "$stage_modifier" ]; then
     if [ "$phase" != "min" ]; then
       POSRES="$BASEDIR/min/restraint.gro"
     fi
-  fi
-  if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then
-    POSRES="$BASEDIR/min/confout.gro"
   fi
 
   [ "$phase" = "prod" ] && NSTEPS=$NUM_STEPS || NSTEPS=-2
