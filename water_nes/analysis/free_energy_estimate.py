@@ -23,6 +23,14 @@ class FreeEnergyEstimate:
     def as_dict(self) -> dict:
         return asdict(self)
 
+    def __neg__(self) -> "FreeEnergyEstimate":
+        return FreeEnergyEstimate(
+            value=-self.value,
+            error=self.error,
+            units=self.units,
+            bootstrap_error=self.bootstrap_error,
+        )
+
     def __add__(self, other: "FreeEnergyEstimate") -> "FreeEnergyEstimate":
         if self.units != other.units:
             raise NotImplementedError(
