@@ -42512,8 +42512,8 @@ LIG                  1
 #ifdef MOL_RESTRAINT_A
 [ intermolecular_interactions ]
 [ bonds ]
-;      ai       aj     type      low      up1      up2        k
-     4426     4427       10      0.0      0.2      1.0   8368.0
+;      ai       aj     type     lowA     up1A     up2A       kA     lowB     up1B     up2B       kB
+     4426     4427       10      0.0      0.2      1.0   8368.0      0.0      0.2      1.0   8368.0
 #endif
 #ifdef MOL_RESTRAINT_AB
 [ intermolecular_interactions ]

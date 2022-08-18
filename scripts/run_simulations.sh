@@ -94,9 +94,6 @@ for phase in $PHASES; do
     if [ -z "$RUN_NUMBER" ] || ! [ "$RUN_NUMBER" -ge 1 ] &>/dev/null; then
       fail "NES phase requires a run number (-n) greater or equal 1"
     fi
-    if [ "$STAGE" -ne 2 ] && [ "$STAGE" -ne 3 ]; then
-      fail "NES phase is only implemented for stages 2 and 3"
-    fi
   fi
 done
 
@@ -159,17 +156,17 @@ function run_simulation() {
     POSRES="-r $POSRES"
   fi
 
-  GROMPP_CMD="$GMX grompp -c $GRO -p $TOP -f $MDP -maxwarn $WARNINGS $POSRES"
-  eval "$GROMPP_CMD"
-  SUCCESS=$?
-  COUNTER=1
-  while [ $SUCCESS -ne 0 ] && [ $COUNTER -lt 3 ]; do
-      sleep 30
-      eval "$GROMPP_CMD"
-      SUCCESS=$?
-      COUNTER=$((COUNTER+1))
-  done
-  [ $SUCCESS -eq 0 ] || fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
+  #GROMPP_CMD="$GMX grompp -c $GRO -p $TOP -f $MDP -maxwarn $WARNINGS $POSRES"
+  #eval "$GROMPP_CMD"
+  #SUCCESS=$?
+  #COUNTER=1
+  #while [ $SUCCESS -ne 0 ] && [ $COUNTER -lt 3 ]; do
+  #    sleep 30
+  #    eval "$GROMPP_CMD"
+  #    SUCCESS=$?
+  #    COUNTER=$((COUNTER+1))
+  #done
+  #[ $SUCCESS -eq 0 ] || fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
   MDRUN_CMD="$GMX mdrun -nsteps $NSTEPS $RUN_PARAMS"
   eval "$MDRUN_CMD" ||
     fail "mdrun command failed:\n\t$MDRUN_CMD\n\t(wd: $PWD)"
