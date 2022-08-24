@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMPLEMENTED_STAGES="1 1a 1b 2 2a 3 3a 4a 4b 5a 5b 6 6a 7 7a 8b"
+IMPLEMENTED_STAGES="1 1a 1b 2 2a 3 3a 4a 4b 5a 5a1 5a2 5a3 5a4 5b 6 6a 7 7a 8b"
 IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
 
 function usage() {
