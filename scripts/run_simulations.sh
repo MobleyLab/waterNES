@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMPLEMENTED_STAGES="1 1a 1b 2 2a 3 3a 4a 4b 5a 5a1 5a2 5a3 5a4 5b 6 6a 7 7a 8b"
+IMPLEMENTED_STAGES="1 1a 1b 2 2a 3 3a 3a1 4a 4a1 4a2 4a3 4a4 4b 5a 5a1 5a2 5a3 5a4 5b 6 6a 7 7a 8b"
 IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
 
 function usage() {
@@ -156,17 +156,17 @@ function run_simulation() {
     POSRES="-r $POSRES"
   fi
 
-  #GROMPP_CMD="$GMX grompp -c $GRO -p $TOP -f $MDP -maxwarn $WARNINGS $POSRES"
-  #eval "$GROMPP_CMD"
-  #SUCCESS=$?
-  #COUNTER=1
-  #while [ $SUCCESS -ne 0 ] && [ $COUNTER -lt 3 ]; do
-  #    sleep 30
-  #    eval "$GROMPP_CMD"
-  #    SUCCESS=$?
-  #    COUNTER=$((COUNTER+1))
-  #done
-  #[ $SUCCESS -eq 0 ] || fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
+  GROMPP_CMD="$GMX grompp -c $GRO -p $TOP -f $MDP -maxwarn $WARNINGS $POSRES"
+  eval "$GROMPP_CMD"
+  SUCCESS=$?
+  COUNTER=1
+  while [ $SUCCESS -ne 0 ] && [ $COUNTER -lt 3 ]; do
+      sleep 300
+      eval "$GROMPP_CMD"
+      SUCCESS=$?
+      COUNTER=$((COUNTER+1))
+  done
+  [ $SUCCESS -eq 0 ] || fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
   MDRUN_CMD="$GMX mdrun -nsteps $NSTEPS $RUN_PARAMS"
   eval "$MDRUN_CMD" ||
     fail "mdrun command failed:\n\t$MDRUN_CMD\n\t(wd: $PWD)"
@@ -227,7 +227,16 @@ for phase in $PHASES; do
   fi
   if [ -n "$stage_modifier" ]; then
     if [ "$phase" != "min" ]; then
-      POSRES="$BASEDIR/min/restraint.gro"
+      run=$([[ "$WORKDIR" =~ run. ]] && echo "${BASH_REMATCH[0]}")
+      if [ "$run" == "run1" ]; then
+        POSRES="$BASEDIR/min/restraint.gro"
+      fi
+      if [ "$run" == "run2" ]; then
+        POSRES="$BASEDIR/average_frame_backbone.gro"
+      fi
+      if [ "$run" == "run3" ]; then
+        POSRES="$BASEDIR/average_frame_pocket.gro"
+      fi
     fi
   fi
 
