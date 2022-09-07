@@ -4,4 +4,4 @@ define       = -DPOSRES_POCKET_ON_OFF
 ;----------------------------------------------------
 ; FREE ENERGY CALCULATIONS
 ;----------------------------------------------------
-init_lambda_state        = 3
+init_lambda_state        = 10

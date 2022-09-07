@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMPLEMENTED_STAGES="1 2 3 4 5 6 7"
+IMPLEMENTED_STAGES="1 2 3 3.1 3.2 3.3 3.4 3.5 3.6 3.7 4 5 6 6.1 6.2 6.3 6.4 6.5 6.6 6.7 7"
 IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
 
 function usage() {
@@ -189,6 +189,9 @@ for phase in $PHASES; do
   [ -e "$GRO" ] || fail "Phase $phase cannot be run because coordinate file $GRO is missing."
 
   # Create input file for phase & stage
+  LAMBDA_WINDOW=$(STAGE:2:1)
+  [ -n "$LAMBDA_WINDOW" ] && STAGE=$(STAGE:0:1)
+
   MDP=$WORKDIR/input.mdp
   cp "$INPUTDIR"/"$phase".mdp "$MDP" || fail "Error creating input file"
   if [ "$phase" != "NES" ]; then
@@ -196,6 +199,10 @@ for phase in $PHASES; do
   else
     cat "$INPUTDIR"/stage"${STAGE}"NES.mdp >>"$MDP" || fail "Error creating input file"
   fi
+  if [ -n "$LAMBDA_WINDOW" ]; then
+    perl -pi -e "s/init_lambda_state        = 2/init_lambda_state        = $((LAMBDA_WINDOW+2))/" $MDP
+  fi
+
   unify_define_statement "$MDP"
 
   # Create topology file for phase & stage

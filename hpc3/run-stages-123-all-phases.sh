@@ -34,7 +34,7 @@ for system in "$@"; do
   mkdir -p "$SYSTEM_DIR"/slurm_output
 
   # Loop over all stages
-  for stage in 1 2 3 4 5 6 7; do
+  for stage in 1 2 3 4 5 6 7 3.1 3.2 3.3 3.4 3.5 3.6 3.7 6.1 6.2 6.3 6.4 6.5 6.6 6.7; do
     # Submit equilibrium run (minimization, equilibration and production runs)
     jobidEq=$(sbatch --parsable --job-name="$system"-stage$stage-equilibrium \
       --error="$SYSTEM_DIR"/slurm_output/equilibrium-s$stage.err \
@@ -44,7 +44,7 @@ for system in "$@"; do
 
     # For relevant stages, submit array of NES runs that depend on successful completion
     # of the equilibrium run (i.e., will only run once the previous run is completed)
-    if [ $stage -ne 1 ]; then
+    if [ "${stage:0:1}" -ne 1 ] && [ -z "${stage:2:1}" ]; then
       sbatch --dependency=afterok:"$jobidEq" --job-name="$system"-stage$stage-nes \
         --error="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.err \
         --output="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.out \
