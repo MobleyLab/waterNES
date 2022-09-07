@@ -9,6 +9,7 @@ integrator   = sd            ; stochastic leap-frog integrator
 tinit        = 0
 nsteps       = 125000      ; 250ps
 dt           = 0.002         ; 2 fs
+comm-mode    = None
 
 ;----------------------------------------------------
 ; OUTPUT CONTROL
@@ -20,7 +21,7 @@ nstxout-compressed     = 5000       ; xtc compressed trajectory output every 500
 compressed-x-precision = 10000      ; precision with which to write to the compressed trajectory file
 nstlog                 = 5000       ; update log file every 10 ps
 nstcalcenergy          = 1        ; calculate energies every step
-nstdhdl                  = 1
+nstdhdl                = 1
 
 ;----------------------------------------------------
 ; BONDS
@@ -84,7 +85,7 @@ gen_vel      = no       ; Velocity generation is off
 ; FREE ENERGY CALCULATIONS
 ;----------------------------------------------------
 free-energy              = yes
-sc-function                = gapsys
+sc-function              = gapsys
 couple-moltype           = MOL
 couple-intramol          = no
 couple-lambda0           = vdw-q ;(state A)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMPLEMENTED_STAGES="1 1a 1b 2 2a 3 3a 3a1 4a 4a1 4a2 4a3 4a4 4b 5a 5a1 5a2 5a3 5a4 5b 6 6a 7 7a 8b"
+IMPLEMENTED_STAGES="1 2 3 4 5 6 7"
 IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
 
 function usage() {
@@ -157,16 +157,7 @@ function run_simulation() {
   fi
 
   GROMPP_CMD="$GMX grompp -c $GRO -p $TOP -f $MDP -maxwarn $WARNINGS $POSRES"
-  eval "$GROMPP_CMD"
-  SUCCESS=$?
-  COUNTER=1
-  while [ $SUCCESS -ne 0 ] && [ $COUNTER -lt 3 ]; do
-      sleep 300
-      eval "$GROMPP_CMD"
-      SUCCESS=$?
-      COUNTER=$((COUNTER+1))
-  done
-  [ $SUCCESS -eq 0 ] || fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
+  eval "$GROMPP_CMD" || fail "grompp command failed:\n\t$GROMPP_CMD\n\t(wd: $PWD)"
   MDRUN_CMD="$GMX mdrun -nsteps $NSTEPS $RUN_PARAMS"
   eval "$MDRUN_CMD" ||
     fail "mdrun command failed:\n\t$MDRUN_CMD\n\t(wd: $PWD)"
@@ -207,35 +198,14 @@ for phase in $PHASES; do
   fi
   unify_define_statement "$MDP"
 
-  stage_modifier=${STAGE:1:1}
-  if [ "$phase" = "prod" ] || [ "$phase" = "NES" ]; then
-    if [ -n "$stage_modifier" ]; then
-      cat "$INPUTDIR"/stageNxprod.mdp >>"$MDP" || fail "Error creating input file"
-    else
-      cat "$INPUTDIR"/stageNprod.mdp >>"$MDP" || fail "Error creating input file"
-    fi
-  fi
-
   # Create topology file for phase & stage
   TOP="$TOPDIR"/system.top
 
   [ "$phase" = "min" ] && WARNINGS=1 || WARNINGS=0
 
-  POSRES=""
+  POSRES="$BASEDIR/minimized.gro"
   if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then
     POSRES="$BASEDIR/min/confout.gro"
-  fi
-  if [ -n "$stage_modifier" ]; then
-    run=$([[ "$WORKDIR" =~ run. ]] && echo "${BASH_REMATCH[0]}")
-    if [ "$run" == "run1" ]; then
-      POSRES="$BASEDIR/minimized.gro"
-    fi
-    if [ "$run" == "run2" ]; then
-      POSRES="$BASEDIR/average_frame_backbone.gro"
-    fi
-    if [ "$run" == "run3" ]; then
-      POSRES="$BASEDIR/average_frame_pocket.gro"
-    fi
   fi
 
   [ "$phase" = "prod" ] && NSTEPS=$NUM_STEPS || NSTEPS=-2

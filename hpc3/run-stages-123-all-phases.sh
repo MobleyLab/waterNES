@@ -33,8 +33,8 @@ for system in "$@"; do
   [ -d "$SYSTEM_DIR" ] || fail "Directory $SYSTEM_DIR not found"
   mkdir -p "$SYSTEM_DIR"/slurm_output
 
-  # Loop over stages 1, 2, and 3
-  for stage in 1 2 3; do
+  # Loop over all stages
+  for stage in 1 2 3 4 5 6 7; do
     # Submit equilibrium run (minimization, equilibration and production runs)
     jobidEq=$(sbatch --parsable --job-name="$system"-stage$stage-equilibrium \
       --error="$SYSTEM_DIR"/slurm_output/equilibrium-s$stage.err \
@@ -42,9 +42,9 @@ for system in "$@"; do
       --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE=$stage,STRUCTURES_SCRIPT=$STRUCTURES_SCRIPT,NUM_NES=$NUM_NES \
       $EQUILIBRIUM_SCRIPT)
 
-    # For stages 2 and 3, submit array of NES runs that depend on successful completion
+    # For relevant stages, submit array of NES runs that depend on successful completion
     # of the equilibrium run (i.e., will only run once the previous run is completed)
-    if [ $stage -eq 2 ] || [ $stage -eq 3 ]; then
+    if [ $stage -ne 1 ]; then
       sbatch --dependency=afterok:"$jobidEq" --job-name="$system"-stage$stage-nes \
         --error="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.err \
         --output="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.out \

@@ -1,5 +1,0 @@
-;----------------------------------------------------
-; RUN CONTROL
-;----------------------------------------------------
-comm-mode    = Linear
-nstcomm      = 500           ; frequency for center of mass motion removal

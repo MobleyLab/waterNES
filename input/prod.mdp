@@ -9,6 +9,7 @@ integrator   = sd            ; stochastic leap-frog integrator
 tinit        = 0
 nsteps       = 10000000      ; 10 M steps - 20ns
 dt           = 0.002         ; 2 fs
+comm-mode    = None
 
 ;----------------------------------------------------
 ; OUTPUT CONTROL
@@ -87,6 +88,7 @@ delta_lambda             = 0
 couple-intramol          = no
 nstdhdl                  = 5000
 separate-dhdl-file       = yes
+dhdl-print-energy        = potential  ; total potential energy of system included
 calc-lambda-neighbors    = -1
 vdw-lambdas              = 1.0 1.0 0.0 0.0
 restraint-lambdas        = 0.0 1.0 1.0 0.0
