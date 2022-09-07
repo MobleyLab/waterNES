@@ -8593,12 +8593,12 @@ CL                  23
 #ifdef MOL_RESTRAINT_ON
 [ intermolecular_interactions ]
 [ bonds ]
-;      ai       aj     type     lowA     up1A     up2A       kA     lowB     up1B     up2B       kB
-      893      894       10      0.0      0.2      1.0   8368.0      0.0      0.2      1.0   8368.0
+;      ai       aj     type       bA       kA       bB       kB
+      893      894        6      0.0    209.2      0.0    209.2
 #endif
 #ifdef MOL_RESTRAINT_OFF_ON
 [ intermolecular_interactions ]
 [ bonds ]
-;      ai       aj     type     lowA     up1A     up2A       kA     lowB     up1B     up2B       kB
-      893      894       10      0.0      0.2      1.0      0.0      0.0      0.2      1.0   8368.0
+;      ai       aj     type       bA       kA       bB       kB
+      893      894        6      0.0      0.0      0.0    209.2
 #endif
