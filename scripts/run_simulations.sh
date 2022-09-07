@@ -111,6 +111,7 @@ SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 INPUTDIR=$SCRIPT_PATH/../input
 [ -d "$INPUTDIR" ] || fail "Input directory $INPUTDIR not found."
 for stage in $IMPLEMENTED_STAGES; do
+  [ -z "$(stage:2:1)" ] && continue
   [ -e "$INPUTDIR"/stage"$stage".mdp ] || fail "Input file $INPUTDIR/stage$stage.mdp is missing."
 done
 for phase in $IMPLEMENTED_PHASES; do
