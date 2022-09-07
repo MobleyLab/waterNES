@@ -1,7 +1,0 @@
-define       = -DSOL_RESTRAINT_ON_OFF -DMOL_RESTRAINT_ON -DMOL_INTERACTING
-define       = -DPOSRES_POCKET_ON_OFF
-
-;----------------------------------------------------
-; FREE ENERGY CALCULATIONS
-;----------------------------------------------------
-init_lambda_state        = 2
