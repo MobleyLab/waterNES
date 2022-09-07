@@ -24,6 +24,8 @@ NES_SCRIPT=hpc3/nes.sh
 # Define the size of the simulation swarm for NES simulations
 NUM_NES=100
 
+RUN=1
+
 # Loop over provided systems
 for system in "$@"; do
   echo "System $system"
@@ -39,7 +41,7 @@ for system in "$@"; do
     jobidEq=$(sbatch --parsable --job-name="$system"-stage$stage-equilibrium \
       --error="$SYSTEM_DIR"/slurm_output/equilibrium-s$stage.err \
       --output="$SYSTEM_DIR"/slurm_output/equilibrium-s$stage.out \
-      --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE=$stage,STRUCTURES_SCRIPT=$STRUCTURES_SCRIPT,NUM_NES=$NUM_NES \
+      --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE=$stage,STRUCTURES_SCRIPT=$STRUCTURES_SCRIPT,NUM_NES=$NUM_NES,RUN=$RUN \
       $EQUILIBRIUM_SCRIPT)
 
     # For relevant stages, submit array of NES runs that depend on successful completion
@@ -48,7 +50,7 @@ for system in "$@"; do
       sbatch --dependency=afterok:"$jobidEq" --job-name="$system"-stage$stage-nes \
         --error="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.err \
         --output="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.out \
-        --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE=$stage \
+        --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE=$stage,RUN=$RUN \
         --array=1-$NUM_NES \
         $NES_SCRIPT
     fi

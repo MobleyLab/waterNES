@@ -211,7 +211,7 @@ for phase in $PHASES; do
 
   [ "$phase" = "min" ] && WARNINGS=1 || WARNINGS=0
 
-  POSRES="$BASEDIR/minimized.gro"
+  POSRES="$TOPDIR/minimized.gro"
   if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then
     POSRES="$BASEDIR/min/confout.gro"
   fi
