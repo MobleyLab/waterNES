@@ -4774,7 +4774,7 @@ system1          3
 #ifdef SOL_RESTRAINT_OFF
  4380  attach  286   ATT   AT1   4380   0.00000   0.00000  ; dummy atom - no mass
 #endif
-#ifdef SOL_RESTRAINT_ON_OFF
+#ifdef SOL_RESTRAINT_OFF_ON
  4380  attachX 286   ATT   AT1   4380   0.00000   0.00000  attach   0.00000   0.00000
 #endif
 
@@ -41121,19 +41121,6 @@ MOL             3
 2       1       3       4
 3       1       2       4
 4       1       2       3
-
-#ifdef POSRES_POCKET_MOL_A
-; Position restraint for each water oxygen
-[ position_restraints ]
-;  i funct         g       r[nm]    k[kJ/mol]
-   1    2          1         0.2       8368.0
-#endif
-#ifdef POSRES_POCKET_MOL_AB
-; Position restraint for each water oxygen
-[ position_restraints ]
-;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
-   1    2          1         0.2       8368.0      0.2            0
-#endif
 
 [ moleculetype ]
 ; molname       nrexcl
