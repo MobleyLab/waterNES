@@ -111,7 +111,7 @@ SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 INPUTDIR=$SCRIPT_PATH/../input
 [ -d "$INPUTDIR" ] || fail "Input directory $INPUTDIR not found."
 for stage in $IMPLEMENTED_STAGES; do
-  [ -z "$(stage:2:1)" ] && continue
+  [ -z "${stage:2:1}" ] && continue
   [ -e "$INPUTDIR"/stage"$stage".mdp ] || fail "Input file $INPUTDIR/stage$stage.mdp is missing."
 done
 for phase in $IMPLEMENTED_PHASES; do
@@ -190,8 +190,8 @@ for phase in $PHASES; do
   [ -e "$GRO" ] || fail "Phase $phase cannot be run because coordinate file $GRO is missing."
 
   # Create input file for phase & stage
-  LAMBDA_WINDOW=$(STAGE:2:1)
-  [ -n "$LAMBDA_WINDOW" ] && STAGE=$(STAGE:0:1)
+  LAMBDA_WINDOW=${STAGE:2:1}
+  [ -n "$LAMBDA_WINDOW" ] && STAGE=${STAGE:0:1}
 
   MDP=$WORKDIR/input.mdp
   cp "$INPUTDIR"/"$phase".mdp "$MDP" || fail "Error creating input file"
