@@ -11,7 +11,6 @@
 # SYSTEM_DIR
 # RUN
 # STAGE
-# OFFSET
 
 # The source command can be replaced by loading a module (if the GROMACS version you
 # want to use is available) or by a pointer to any other GROAMCS installation.
@@ -19,7 +18,7 @@
 # shellcheck source=/dev/null
 source ~/bin/gmx2022.2+/bin/GMXRC
 
-RUN_NUMBER=$((SLURM_ARRAY_TASK_ID*4-OFFSET))
+RUN_NUMBER=$SLURM_ARRAY_TASK_ID
 
 # Run NES simulation. The simulation number is defined by the Slurm array task ID.
 bash "$RUN_SCRIPT" -d "$SYSTEM_DIR"/run"$RUN"/stage"$STAGE" -t "$SYSTEM_DIR" -x gmx \
