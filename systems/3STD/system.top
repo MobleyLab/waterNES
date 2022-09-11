@@ -24795,15 +24795,6 @@ system1          3
 #ifdef POSRES
 #include "posre_protein.itp"
 #endif
-#ifdef POSRES_POCKET_ON
-#include "posre_pocket_on.itp"
-#endif
-#ifdef POSRES_POCKET_OFF_ON
-#include "posre_pocket_off_on.itp"
-#endif
-#ifdef POSRES_POCKET_OFF
-#include "posre_pocket_off.itp"
-#endif
 
 
 [ moleculetype ]

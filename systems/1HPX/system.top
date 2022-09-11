@@ -29750,15 +29750,6 @@ system1          3
 #ifdef POSRES
 #include "posre_protein.itp"
 #endif
-#ifdef POSRES_POCKET_ON
-#include "posre_pocket_on.itp"
-#endif
-#ifdef POSRES_POCKET_OFF_ON
-#include "posre_pocket_off_on.itp"
-#endif
-#ifdef POSRES_POCKET_OFF
-#include "posre_pocket_off.itp"
-#endif
 
 [ moleculetype ]
 ; molname       nrexcl
@@ -29856,19 +29847,6 @@ HOH             3
 3       1       2       4
 4       1       2       3
 
-
-#ifdef POSRES_POCKET_SOLVENT_A
-; Position restraint for each water oxygen
-[ position_restraints ]
-;  i funct         g       r[nm]    k[kJ/mol]
-   1    2          1       -0.35       8368.0
-#endif
-#ifdef POSRES_POCKET_SOLVENT_AB
-; Position restraint for each water oxygen
-[ position_restraints ]
-;  i funct         g      rA[nm]   kA[kJ/mol]   rB[nm]   kB[kJ/mol]
-   1    2          1       -0.35       8368.0    -0.35            0
-#endif
 
 
 [ moleculetype ]
