@@ -80,6 +80,8 @@ for stage in $IMPLEMENTED_STAGES; do
   [ "$STAGE" == "$stage" ] && VALID_STAGE=1
 done
 [ $VALID_STAGE -eq 1 ] || fail "Stage $STAGE is not a valid choice."
+LAMBDA_WINDOW=${STAGE:2:1}
+[ -n "$LAMBDA_WINDOW" ] && STAGE=${STAGE:0:1}
 
 for phase in $PHASES; do
   if [[ "$IMPLEMENTED_PHASES" != *"$phase"* ]]; then
@@ -190,9 +192,6 @@ for phase in $PHASES; do
   [ -e "$GRO" ] || fail "Phase $phase cannot be run because coordinate file $GRO is missing."
 
   # Create input file for phase & stage
-  LAMBDA_WINDOW=${STAGE:2:1}
-  [ -n "$LAMBDA_WINDOW" ] && STAGE=${STAGE:0:1}
-
   MDP=$WORKDIR/input.mdp
   cp "$INPUTDIR"/"$phase".mdp "$MDP" || fail "Error creating input file"
   if [ "$phase" != "NES" ]; then
