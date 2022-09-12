@@ -74,7 +74,7 @@ def get_pocket_selection_string(universe):
 def calculate_distances(universe, pocket_selection_string):
     reference = universe.select_atoms("resname ATT")
     trapped_water = universe.select_atoms("resname MOL and name O")
-    solvent = universe.select_atoms("resname SOL and name O")
+    solvent = universe.select_atoms("resname HOH and name O")
     pocket = universe.select_atoms(pocket_selection_string)
     distance_dict = {
         "trapped water": [],
