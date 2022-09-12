@@ -1,5 +1,7 @@
 import argparse
+import os
 import pickle
+import sys
 
 import alchemlyb
 import MDAnalysis as mda
@@ -11,6 +13,7 @@ from alchemlyb.preprocessing import slicing, statistical_inefficiency
 from MDAnalysis import transformations as mda_transformations
 from MDAnalysis.analysis import distances as mda_distances
 
+sys.path.append(os.getcwd())
 from water_nes.analysis.free_energy_estimate import FreeEnergyEstimate
 from water_nes.analysis.nes_free_energy import calculate_nes_free_energy
 
