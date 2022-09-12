@@ -33,5 +33,5 @@ mkdir -p "$SYSTEM_DIR"/slurm_output
 sbatch --job-name="$system"-stage"$stage"-nes-"$runNumber" \
   --error="$SYSTEM_DIR"/slurm_output/nes-s"$stage"-"$runNumber".err \
   --output="$SYSTEM_DIR"/slurm_output/nes-s"$stage"-"$runNumber".out \
-  --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE="$stage",RUN=$RUN,RUNNUMBER="$runNumber" \
+  --export=RUN_SCRIPT=$RUN_SCRIPT,SYSTEM_DIR="$SYSTEM_DIR",STAGE="$stage",RUN=$RUN,RUN_NUMBER="$runNumber" \
   $NES_SCRIPT
