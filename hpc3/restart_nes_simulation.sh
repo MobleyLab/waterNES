@@ -5,6 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=1-00:00:00
+#SBATCH --constraint=avx512
 
 # The source command can be replaced by loading a module (if the GROMACS version you
 # want to use is available) or by a pointer to any other GROAMCS installation.

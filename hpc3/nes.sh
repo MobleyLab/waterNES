@@ -5,6 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=1-00:00:00
+#SBATCH --constraint=avx512
 
 # This script expects the following variables to be passed in via Slurm's --export flag:
 # RUN_SCRIPT
