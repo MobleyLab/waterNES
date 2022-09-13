@@ -133,7 +133,7 @@ def calculate_lower_edge_free_energy(cycle_directory):
                 lower=2000,
             )
             u_nk_all_stages.append(
-                statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
+                u_nk  # statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
             )
 
     mbar = MBAR().fit(alchemlyb.concat(u_nk_all_stages))
@@ -202,7 +202,7 @@ def calculate_upper_edge_free_energy(cycle_directory):
                 lower=2000,
             )
             u_nk_all_stages.append(
-                statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
+                u_nk  # statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
             )
 
     mbar = MBAR().fit(alchemlyb.concat(u_nk_all_stages))
