@@ -120,11 +120,12 @@ def calculate_lower_edge_free_energy(cycle_directory):
     output_units = "kcal/mol"
     stages = ["7", "6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "5"]
 
-    # is counter still valid for columns?
     u_nk_all_stages = []
-    for counter, stage in enumerate(stages, start=1):
+    for counter, stage in enumerate(stages):
         u_nk = slicing(
-            extract_u_nk(f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15),
+            extract_u_nk(
+                f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15
+            ).drop((0.0, 0.0, 0.0), axis=1),
             lower=2000,
         )
         u_nk_all_stages.append(
@@ -135,7 +136,7 @@ def calculate_lower_edge_free_energy(cycle_directory):
     edge_f = sum(
         [
             get_unit_converter(output_units)(mbar.delta_f_).iloc[idx][idx - 1]
-            for idx in range(3, len(u_nk_all_stages))
+            for idx in range(2, len(u_nk_all_stages))
         ]
     )
     edge_f_error = sum(
@@ -170,8 +171,8 @@ def calculate_lower_edge_free_energy(cycle_directory):
             units=output_units,
         ),
         "Edge G": FreeEnergyEstimate(
-            value=get_unit_converter(output_units)(mbar.delta_f_).iloc[2][1],
-            error=get_unit_converter(output_units)(mbar.d_delta_f_).iloc[2][1],
+            value=get_unit_converter(output_units)(mbar.delta_f_).iloc[1][0],
+            error=get_unit_converter(output_units)(mbar.d_delta_f_).iloc[1][0],
             units=output_units,
         ),
         "Edge H": FreeEnergyEstimate(
@@ -179,6 +180,7 @@ def calculate_lower_edge_free_energy(cycle_directory):
             error=0.0,
             units=output_units,
         ),
+        "lower edge overlap": mbar.overlap_matrix,
     }
 
 
@@ -226,6 +228,7 @@ def calculate_upper_edge_free_energy(cycle_directory):
             error=edge_d_error,
             units=output_units,
         ),
+        "upper edge overlap": mbar.overlap_matrix,
     }
 
 
