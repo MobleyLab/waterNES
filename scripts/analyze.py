@@ -2,6 +2,7 @@ import argparse
 import os
 import pickle
 import sys
+import warnings
 
 import alchemlyb
 import MDAnalysis as mda
@@ -122,15 +123,18 @@ def calculate_lower_edge_free_energy(cycle_directory):
 
     u_nk_all_stages = []
     for counter, stage in enumerate(stages):
-        u_nk = slicing(
-            extract_u_nk(
-                f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15
-            ).drop((0.0, 0.0, 0.0), axis=1),
-            lower=2000,
-        )
-        u_nk_all_stages.append(
-            statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
-        )
+        with warnings.catch_warnings():
+            # Tons of pandas warnings here
+            warnings.simplefilter(action='ignore', category=FutureWarning)
+            u_nk = slicing(
+                extract_u_nk(
+                    f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15
+                ).drop((0.0, 0.0, 0.0), axis=1),
+                lower=2000,
+            )
+            u_nk_all_stages.append(
+                statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
+            )
 
     mbar = MBAR().fit(alchemlyb.concat(u_nk_all_stages))
     edge_f = sum(
@@ -190,13 +194,16 @@ def calculate_upper_edge_free_energy(cycle_directory):
 
     u_nk_all_stages = []
     for counter, stage in enumerate(stages):
-        u_nk = slicing(
-            extract_u_nk(f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15),
-            lower=2000,
-        )
-        u_nk_all_stages.append(
-            statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
-        )
+        with warnings.catch_warnings():
+            # Tons of pandas warnings here
+            warnings.simplefilter(action='ignore', category=FutureWarning)
+            u_nk = slicing(
+                extract_u_nk(f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15),
+                lower=2000,
+            )
+            u_nk_all_stages.append(
+                statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
+            )
 
     mbar = MBAR().fit(alchemlyb.concat(u_nk_all_stages))
     edge_d = sum(
@@ -247,11 +254,11 @@ def calculate_nes_edges(cycle_directory):
         stageB,
     ) in edge_and_stages:
         xvg_files_forward = [
-            f"{cycle_directory}/stage{stageA}/NES/run{run}"
+            f"{cycle_directory}/stage{stageA}/NES/run{run}/dhdl.xvg"
             for run in range(1, num_nes_repeats + 1)
         ]
         xvg_files_backward = [
-            f"{cycle_directory}/stage{stageB}/NES/run{run}"
+            f"{cycle_directory}/stage{stageB}/NES/run{run}/dhdl.xvg"
             for run in range(1, num_nes_repeats + 1)
         ]
 
