@@ -5669,10 +5669,10 @@ system1          3
    2679   2666     1   0.10100 363171.200000
    2680   2666     1   0.10100 363171.200000
 #ifdef POCKET_RESTRAINT_OFF_ON
-#include pocket_restraint_off_on.itp
+#include "pocket_restraint_off_on.itp"
 #endif
 #ifdef POCKET_RESTRAINT_ON
-#include pocket_restraint_on.itp
+#include "pocket_restraint_on.itp"
 #endif
 
 [ pairs ]
