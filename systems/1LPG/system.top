@@ -9338,6 +9338,12 @@ system1          3
    2445    662     1   0.20380 138908.800000
    3436   3212     1   0.20380 138908.800000
    3987   3586     1   0.20380 138908.800000
+#ifdef POCKET_RESTRAINT_OFF_ON
+#include pocket_restraint_off_on.itp
+#endif
+#ifdef POCKET_RESTRAINT_ON
+#include pocket_restraint_on.itp
+#endif
 
 [ pairs ]
 ;    ai     aj funct         c0         c1         c2         c3

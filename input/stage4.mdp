@@ -1,5 +1,5 @@
 define       = -DSOL_RESTRAINT_OFF_ON -DMOL_RESTRAINT_OFF_ON -DMOL_INTERACTING
-define       = -DPOSRES_POCKET_OFF_ON
+define       = -DPOCKET_RESTRAINT_OFF_ON
 
 ;----------------------------------------------------
 ; FREE ENERGY CALCULATIONS
