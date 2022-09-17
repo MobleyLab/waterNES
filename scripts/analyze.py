@@ -14,6 +14,8 @@ from alchemlyb.preprocessing import slicing, statistical_inefficiency
 from MDAnalysis import transformations as mda_transformations
 from MDAnalysis.analysis import distances as mda_distances
 
+from pymbar.timeseries import ParameterError
+
 sys.path.append(os.getcwd())
 from water_nes.analysis.free_energy_estimate import FreeEnergyEstimate
 from water_nes.analysis.nes_free_energy import calculate_nes_free_energy
@@ -117,36 +119,77 @@ def calculate_distances(universe, pocket_selection_string):
     return distance_dict
 
 
-def calculate_lower_edge_free_energy(cycle_directory):
-    output_units = "kcal/mol"
-    stages = ["7", "6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "5"]
-
+def calculate_mbar_inner(
+    stages, cycle_directory, drop_first, subsample, conservative=True
+):
     u_nk_all_stages = []
     for counter, stage in enumerate(stages):
         with warnings.catch_warnings():
             # Tons of pandas warnings here
-            warnings.simplefilter(action='ignore', category=FutureWarning)
-            u_nk = slicing(
-                extract_u_nk(
-                    f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15
-                ).drop((0.0, 0.0, 0.0), axis=1),
-                lower=2000,
-            )
-            u_nk_all_stages.append(
-                u_nk  # statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
+            warnings.simplefilter(action="ignore", category=FutureWarning)
+            full_u_nk = extract_u_nk(
+                f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15
             )
 
-    mbar = MBAR().fit(alchemlyb.concat(u_nk_all_stages))
+            if drop_first:
+                full_u_nk = full_u_nk.drop((0.0, 0.0, 0.0), axis=1)
+
+            u_nk = slicing(full_u_nk, lower=2000)
+            if subsample:
+                u_nk_all_stages.append(
+                    statistical_inefficiency(
+                        u_nk,
+                        series=u_nk[u_nk.columns[counter]],
+                        conservative=conservative,
+                    )
+                )
+            else:
+                u_nk_all_stages.append(u_nk)
+
+    return MBAR().fit(alchemlyb.concat(u_nk_all_stages))
+
+
+def calculate_mbar(stages, cycle_directory, drop_first):
+    """
+    TODO: Need to better understand this. MBAR sometimes fails when subsampling,
+          and sometimes when _not_ subsampling. The results look reasonable either
+          way, so for now I work around this by rerunning the analysis without
+          subsampling if needed. This shouldn't affect the current analysis, but it
+          would be good to understand the reason for it and possibly fix it!
+    """
+    try:
+        return calculate_mbar_inner(
+            stages, cycle_directory, drop_first, subsample=True, conservative=False
+        )
+    except ParameterError:
+        print("Non-conservative subsampling failed, trying conservative subsampling")
+    try:
+        return calculate_mbar_inner(
+            stages, cycle_directory, drop_first, subsample=True, conservative=True
+        )
+    except ParameterError:
+        print("Conservative subsampling failed, trying without subsampling")
+
+    return calculate_mbar_inner(
+        stages, cycle_directory, drop_first, subsample=False
+    )
+
+
+def calculate_lower_edge_free_energy(cycle_directory):
+    output_units = "kcal/mol"
+    stages = ["7", "6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "5"]
+
+    mbar = calculate_mbar(stages, cycle_directory, drop_first=True)
     edge_f = sum(
         [
             get_unit_converter(output_units)(mbar.delta_f_).iloc[idx][idx - 1]
-            for idx in range(2, len(u_nk_all_stages))
+            for idx in range(2, mbar.delta_f_.shape[0])
         ]
     )
     edge_f_error = sum(
         [
             get_unit_converter(output_units)(mbar.d_delta_f_).iloc[idx][idx - 1]
-            for idx in range(3, len(u_nk_all_stages))
+            for idx in range(2, mbar.d_delta_f_.shape[0])
         ]
     )
 
@@ -192,30 +235,17 @@ def calculate_upper_edge_free_energy(cycle_directory):
     output_units = "kcal/mol"
     stages = ["1", "2", "3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4"]
 
-    u_nk_all_stages = []
-    for counter, stage in enumerate(stages):
-        with warnings.catch_warnings():
-            # Tons of pandas warnings here
-            warnings.simplefilter(action='ignore', category=FutureWarning)
-            u_nk = slicing(
-                extract_u_nk(f"{cycle_directory}/stage{stage}/prod/dhdl.xvg", T=298.15),
-                lower=2000,
-            )
-            u_nk_all_stages.append(
-                u_nk  # statistical_inefficiency(u_nk, series=u_nk[u_nk.columns[counter]])
-            )
-
-    mbar = MBAR().fit(alchemlyb.concat(u_nk_all_stages))
+    mbar = calculate_mbar(stages, cycle_directory, drop_first=False)
     edge_d = sum(
         [
             get_unit_converter(output_units)(mbar.delta_f_).iloc[idx - 1][idx]
-            for idx in range(3, len(u_nk_all_stages))
+            for idx in range(3, mbar.delta_f_.shape[0])
         ]
     )
     edge_d_error = sum(
         [
             get_unit_converter(output_units)(mbar.d_delta_f_).iloc[idx - 1][idx]
-            for idx in range(3, len(u_nk_all_stages))
+            for idx in range(3, mbar.d_delta_f_.shape[0])
         ]
     )
 
