@@ -170,9 +170,7 @@ def calculate_mbar(stages, cycle_directory, drop_first):
     except ParameterError:
         print("Conservative subsampling failed, trying without subsampling")
 
-    return calculate_mbar_inner(
-        stages, cycle_directory, drop_first, subsample=False
-    )
+    return calculate_mbar_inner(stages, cycle_directory, drop_first, subsample=False)
 
 
 def calculate_lower_edge_free_energy(cycle_directory):
@@ -292,13 +290,18 @@ def calculate_nes_edges(cycle_directory):
             for run in range(1, num_nes_repeats + 1)
         ]
 
-        free_energies[f"Edge {edge}"] = calculate_nes_free_energy(
-            xvg_files_forward_transition=xvg_files_forward,
-            xvg_files_backward_transition=xvg_files_backward,
-            temperature=298.15,
-            output_units="kcal/mol",
-            bootstrapping_repeats=0,
-        )
+        try:
+            free_energies[f"Edge {edge}"] = calculate_nes_free_energy(
+                xvg_files_forward_transition=xvg_files_forward,
+                xvg_files_backward_transition=xvg_files_backward,
+                temperature=298.15,
+                output_units="kcal/mol",
+                bootstrapping_repeats=0,
+            )
+        except ValueError:
+            free_energies[f"Edge {edge}"] = FreeEnergyEstimate(
+                value=np.nan, error=np.nan, units="kcal/mol", bootstrap_error=0
+            )
 
     return free_energies
 
