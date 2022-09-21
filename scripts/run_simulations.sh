@@ -202,13 +202,16 @@ for phase in $PHASES; do
   if [ -n "$LAMBDA_WINDOW" ]; then
     perl -pi -e "s/init_lambda_state        = 2/init_lambda_state        = $((LAMBDA_WINDOW+2))/" $MDP
   fi
+  if [ -e "$TOPDIR"/system.mdp ]; then
+    cat "$TOPDIR"/system.mdp >>"$MDP" || fail "Error creating input file"
+  fi
 
   unify_define_statement "$MDP"
 
   # Create topology file for phase & stage
   TOP="$TOPDIR"/system.top
 
-  [ "$phase" = "min" ] && WARNINGS=1 || WARNINGS=0
+  [ "$phase" = "min" ] && WARNINGS=2 || WARNINGS=0
 
   POSRES="$TOPDIR/minimized.gro"
   if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then
@@ -217,6 +220,6 @@ for phase in $PHASES; do
 
   [ "$phase" = "prod" ] && NSTEPS=$NUM_STEPS || NSTEPS=-2
 
-  run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
+  run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRESX" "$NSTEPS"
 
 done
