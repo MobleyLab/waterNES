@@ -3481,7 +3481,7 @@ system1          3
  3131     attach    199    ATT    AT1   3131 0.00000000   0.000000   ; qtot 6.000000
 #endif
 #ifdef SOL_RESTRAINT_OFF_ON
- 3131     attachX   199    ATT    AT1   3131 0.00000000   0.000000  attach   0.00000   0.00000
+ 3131     attach    199    ATT    AT1   3131 0.00000000   0.000000  attachX  0.00000   0.00000
 #endif
 
 [ bonds ]

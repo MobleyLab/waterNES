@@ -2942,7 +2942,7 @@ system1          3
  2681  attach  165   ATT   AT1   2681   0.00000   0.00000  ; dummy atom - no mass
 #endif
 #ifdef SOL_RESTRAINT_OFF_ON
- 2681  attachX 165   ATT   AT1   2681   0.00000   0.00000  attach   0.00000   0.00000
+ 2681  attach  165   ATT   AT1   2681   0.00000   0.00000  attachX  0.00000   0.00000
 #endif
 
 
