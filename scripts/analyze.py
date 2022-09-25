@@ -647,7 +647,7 @@ def do_analysis(
                 water_restraint_energy=trapped_restraint_energy if stage == 1 else None,
                 position_restraint_energy=position_restraint_energy_for_stage,
                 current_lambda_state=stage_to_lambda_state[f"stage{stage}"],
-                alternative_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl_mod.xvg"
+                alternative_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl_alt.xvg"
                 if stage_to_lambda_state[f"stage{stage}"] == 10
                 else None,
             )
