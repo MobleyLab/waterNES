@@ -12,6 +12,14 @@ class FreeEnergyEstimate:
     units: str
     bootstrap_error: float = 0.0
 
+    def __str__(self):
+        if self.bootstrap_error != 0.0:
+            error = self.bootstrap_error
+        else:
+            error = self.error
+
+        return f"{self.value:7.3f} +- {error:5.3f} {self.units}"
+
     def __round__(self, num_digits: int = 0) -> "FreeEnergyEstimate":
         return FreeEnergyEstimate(
             value=round(self.value, num_digits),
