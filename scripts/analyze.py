@@ -374,7 +374,10 @@ def calculate_nes_edges(cycle_directory: str) -> Dict[str, FreeEnergyEstimate]:
         ]
 
         try:
-            free_energies[f"Edge {edge}"] = calculate_nes_free_energy(
+            (
+                free_energies[f"Edge {edge}"],
+                free_energies[f"Work edge {edge}"],
+            ) = calculate_nes_free_energy(
                 xvg_files_forward_transition=xvg_files_forward,
                 xvg_files_backward_transition=xvg_files_backward,
                 temperature=298.15,
@@ -385,6 +388,7 @@ def calculate_nes_edges(cycle_directory: str) -> Dict[str, FreeEnergyEstimate]:
             free_energies[f"Edge {edge}"] = FreeEnergyEstimate(
                 value=np.nan, error=np.nan, units="kcal/mol", bootstrap_error=0
             )
+            free_energies[f"Work edge {edge}"] = None
 
     return free_energies
 
