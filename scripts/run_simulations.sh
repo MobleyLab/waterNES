@@ -221,7 +221,8 @@ for phase in $PHASES; do
   # Create topology file for phase & stage
   TOP="$TOPDIR"/system.top
 
-  [ "$phase" = "min" ] && WARNINGS=2 || WARNINGS=0
+  # Problem with ligand bonds to dummy atoms
+  [ "$phase" = "min" ] && WARNINGS=2 || WARNINGS=1
 
   POSRES="$TOPDIR/minimized.gro"
   if [ "$phase" = "eqNVT" ] || [ "$phase" = "eqNPT" ]; then

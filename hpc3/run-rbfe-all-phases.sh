@@ -54,7 +54,7 @@ for main_system in "$@"; do
 
       # For relevant stages, submit array of NES runs that depend on successful completion
       # of the equilibrium run (i.e., will only run once the previous run is completed)
-      if [ "$stage" -ne 1 ]; then
+      if [ "$stage" -eq 4 ] || [ "$stage" -eq 5 ]; then
         sbatch --dependency=afterok:"$jobidEq" --job-name="$system"-stage$stage-nes \
           --error="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.err \
           --output="$SYSTEM_DIR"/slurm_output/nes-s$stage-%a.out \

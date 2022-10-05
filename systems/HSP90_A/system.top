@@ -32507,6 +32507,24 @@ Protein_chain_A     3
  3260  3272  3271  3273     4 
  3265  3269  3268  3270     4
 
+[ virtual_sites2 ]
+; atom_nr   atom_i   atom_j      fct        a
+     3274      582     1895        1   0.5431
+
+; Include Position restraint file
+#ifdef POSRES
+#include "posre_protein.itp"
+#endif
+#ifdef POSRES_POCKET_ON
+#include "posre_pocket_on.itp"
+#endif
+#ifdef POSRES_POCKET_OFF_ON
+#include "posre_pocket_off_on.itp"
+#endif
+#ifdef POSRES_POCKET_OFF
+#include "posre_pocket_off.itp"
+#endif
+
 ; END protein molecule
 
 [ moleculetype ]
@@ -33619,6 +33637,10 @@ LIG  3
 
  [ cmap ]
 ;  ai    aj    ak    al    am funct
+
+#ifdef POSRES
+#include "posre_ligand.itp"
+#endif
 
 ; END ligand molecule
 
