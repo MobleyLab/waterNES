@@ -1,0 +1,3 @@
+define       = -DSOL_RESTRAINT_ON -DMOL_RESTRAINT_ON -DMOL_NONINTERACTING
+define       = -DPOSRES_POCKET_ON
+define       = -DLIGAND_AB

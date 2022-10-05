@@ -1,10 +1,10 @@
 #!/bin/bash
 
 IMPLEMENTED_STAGES="1 2 3 3.1 3.2 3.3 3.4 3.5 3.6 3.7 4 5 6 6.1 6.2 6.3 6.4 6.5 6.6 6.7 7"
-IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES"
+IMPLEMENTED_PHASES="min eqNVT eqNPT prod NES NES2"
 
 function usage() {
-  echo "USAGE: $(basename "$0") [-h] -d dir -t dir [-c crd] -x gmx [-o opts] -s N -p {min,eqNVT,eqNPT,prod,NES} [-n N] [-m N]"
+  echo "USAGE: $(basename "$0") [-h] -d dir -t dir [-c crd] -x gmx [-o opts] -s N -p {min,eqNVT,eqNPT,prod,NES,NES2} [-n N] [-m N]"
 }
 
 function help() {
@@ -24,10 +24,11 @@ function help() {
   # echo -e "\t2: Stage with fully interacting, restrained water"
   # echo -e "\t3: Stage with non-interacting, restrained water"
   echo -e "\t$IMPLEMENTED_STAGES"
-  echo -e "-p {min,eqNVT,eqNPT,prod,NES}"
+  echo -e "-p {min,eqNVT,eqNPT,prod,NES,NES2}"
   echo -e "\tThe simulation phase to run, one or more of: $IMPLEMENTED_PHASES"
   echo -e "\tSeparate different phases by spaces, e.g. -p \"min eqNVT eqNPT\""
   echo -e "\tNote: The NES phase is only available for stages 2 through 7"
+  echo -e "\tNote: The NES2 phase is only available for stage 5"
   echo -e "-n N\tThe run number for the NES phase"
   echo -e "\tMandatory for the NES phase, ignored otherwise"
   echo -e "-m N\tThe number of steps to run during production, optional"
@@ -92,10 +93,13 @@ for phase in $PHASES; do
       fail "Minimization phase requires a valid coordinate input file."
     fi
   fi
-  if [ "$phase" == "NES" ]; then
+  if [ "$phase" == "NES" ] || [ "$phase" == "NES2" ]; then
     if [ -z "$RUN_NUMBER" ] || ! [ "$RUN_NUMBER" -ge 1 ] &>/dev/null; then
       fail "NES phase requires a run number (-n) greater or equal 1"
     fi
+  fi
+  if [ "$phase" == "NES2" ]; then
+    [ "$STAGE" == "5" ] || fail "NES2 phase is only implemented for stage 5"
   fi
 done
 
@@ -173,7 +177,7 @@ for phase in $PHASES; do
   echo "Running phase $phase ..."
 
   # Create work directory if it doesn't exist
-  if [ "$phase" != "NES" ]; then
+  if [ "$phase" != "NES" ] && [ "$phase" != "NES2" ]; then
     WORKDIR=$BASEDIR/$phase
   else
     WORKDIR=$BASEDIR/$phase/run$RUN_NUMBER
@@ -187,6 +191,7 @@ for phase in $PHASES; do
     "eqNPT") GRO=$BASEDIR/eqNVT/confout.gro ;;
     "prod") GRO=$BASEDIR/eqNPT/confout.gro ;;
     "NES") GRO=$BASEDIR/prod/frames/frame$RUN_NUMBER.gro ;;
+    "NES2") GRO=$BASEDIR/prod/frames/frame$RUN_NUMBER.gro ;;
     *) echo "Unknown phase" ;;
   esac
   [ -e "$GRO" ] || fail "Phase $phase cannot be run because coordinate file $GRO is missing."
@@ -194,16 +199,21 @@ for phase in $PHASES; do
   # Create input file for phase & stage
   MDP=$WORKDIR/input.mdp
   cp "$INPUTDIR"/"$phase".mdp "$MDP" || fail "Error creating input file"
-  if [ "$phase" != "NES" ]; then
+  if [ "$phase" != "NES" ] && [ "$phase" != "NES2" ]; then
     cat "$INPUTDIR"/stage"$STAGE".mdp >>"$MDP" || fail "Error creating input file"
-  else
+  elif [ "$phase" == "NES" ]; then
     cat "$INPUTDIR"/stage"${STAGE}"NES.mdp >>"$MDP" || fail "Error creating input file"
+  elif [ "$phase" == "NES2" ]; then
+    cat "$INPUTDIR"/stage"${STAGE}"NES2.mdp >>"$MDP" || fail "Error creating input file"
   fi
   if [ -n "$LAMBDA_WINDOW" ]; then
     perl -pi -e "s/init_lambda_state        = 2/init_lambda_state        = $((LAMBDA_WINDOW+2))/" $MDP
   fi
-  if [ -e "$TOPDIR"/system.mdp ]; then
+  if [ -e "$TOPDIR"/system.mdp ] && [ "$phase" != "NES2" ]; then
     cat "$TOPDIR"/system.mdp >>"$MDP" || fail "Error creating input file"
+  fi
+  if [ "$phase" == "NES2" ]; then
+    cat "$TOPDIR"/systemNES2.mdp >>"$MDP" || fail "Error creating input file"
   fi
 
   unify_define_statement "$MDP"
@@ -220,6 +230,6 @@ for phase in $PHASES; do
 
   [ "$phase" = "prod" ] && NSTEPS=$NUM_STEPS || NSTEPS=-2
 
-  run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRESX" "$NSTEPS"
+  run_simulation "$WORKDIR" "$MDP" "$GRO" "$TOP" "$WARNINGS" "$POSRES" "$NSTEPS"
 
 done
