@@ -23,7 +23,7 @@ source ~/bin/gmx2022.2+/bin/GMXRC
 
 # Run equilibrium simulations (minimization, equilibration, production)
 bash "$RUN_SCRIPT" -d "$SYSTEM_DIR"/run"$RUN"/stage"$STAGE" -t "$SYSTEM_DIR" \
-  -c "$SYSTEM_DIR"/system.gro -x gmx -o "-ntomp $SLURM_CPUS_PER_TASK" \
+  -c "$SYSTEM_DIR"/minimized.gro -x gmx -o "-ntomp $SLURM_CPUS_PER_TASK" \
   -s "$STAGE" -p "min eqNVT eqNPT prod" -m 3000000 || exit 1
 
 if [ "${STAGE:0:1}" -ne 1 ] && [ -z "${STAGE:2:1}" ]; then
