@@ -30441,9 +30441,6 @@ system1          3
 #ifdef POSRES_POCKET_OFF_ON
 #include "posre_pocket_off_on.itp"
 #endif
-#ifdef POSRES_POCKET_OFF
-#include "posre_pocket_off.itp"
-#endif
 
 
 [ moleculetype ]
