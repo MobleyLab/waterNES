@@ -353,8 +353,6 @@ def calculate_upper_edge_free_energy(
 def calculate_nes_edges(cycle_directory: str) -> Dict[str, FreeEnergyEstimate]:
     edge_and_stages = [
         ("E", 4, 5),
-        ("L", 3, 6),
-        ("K", 2, 7),
     ]
     num_nes_repeats = 100
 
@@ -453,6 +451,12 @@ def write_xvg(
 
     if position_restraint_energy is not None:
         header.remove(
+            '@ s5 legend "\\xD\\f{}H \\xl\\f{} to (0.0000, 1.0000, 0.0000)"\n'
+        )
+        header.remove(
+            '@ s6 legend "\\xD\\f{}H \\xl\\f{} to (1.0000, 1.0000, 0.0000)"\n'
+        )
+        header.remove(
             '@ s7 legend "\\xD\\f{}H \\xl\\f{} to (1.0000, 1.0000, 0.0100)"\n'
         )
         header.remove(
@@ -478,9 +482,9 @@ def write_xvg(
         )
         header.remove('@ s15 legend "pV (kJ/mol)"\n')
         header.append(
-            '@ s7 legend "\\xD\\f{}H \\xl\\f{} to (1.0000, 1.0000, 1.0000)"\n'
+            '@ s5 legend "\\xD\\f{}H \\xl\\f{} to (1.0000, 1.0000, 1.0000)"\n'
         )
-        header.append('@ s8 legend "pV (kJ/mol)"\n')
+        header.append('@ s6 legend "pV (kJ/mol)"\n')
 
     if (alternative_xvg_file is not None) and (current_lambda_state == 10):
         # The alternative file leaves stages 4 and 5 unchanged, removes only the
@@ -489,7 +493,7 @@ def write_xvg(
             out_xvg.write("".join(line for line in header))
             for idx, time in enumerate(input_xvg_contents):
                 xvg_line = input_xvg_contents[time]
-                for lambda_idx in range(3, 10):
+                for lambda_idx in range(1, 10):
                     xvg_line[entry[f"foreign lambda {lambda_idx}"]] = np.nan
                 out_xvg.write(
                     f"{time} "
@@ -504,12 +508,14 @@ def write_xvg(
 
         for idx, time in enumerate(input_xvg_contents):
             xvg_line = input_xvg_contents[time]
+            for lambda_idx in range(1, 10):
+                xvg_line[entry[f"foreign lambda {lambda_idx}"]] = np.nan
 
             if water_restraint_energy is not None:
                 old_value = xvg_line[entry["bonded-lambda"]]
                 new_value = water_restraint_energy[idx]
                 xvg_line[entry["bonded-lambda"]] = new_value
-                for lambda_idx in range(1, 11):
+                for lambda_idx in [10]:
                     xvg_line[entry[f"foreign lambda {lambda_idx}"]] += (
                         new_value - old_value
                     )
@@ -522,7 +528,7 @@ def write_xvg(
                 xvg_line[entry["restraint-lambda"]] = new_value
                 if current_lambda_state == 10:
                     xvg_line[entry["potential"]] += new_value - old_value
-                    for lambda_idx in [0, 1, 2]:
+                    for lambda_idx in [0]:
                         xvg_line[entry[f"foreign lambda {lambda_idx}"]] += (
                             old_value - new_value
                         )
@@ -588,7 +594,7 @@ def do_analysis(
 
     position_restraint_energy = None
     if postprocess_pocket:
-        all_stages = [1, 2, 3, 4, 5, 6, 7]
+        all_stages = [1, 4, 5, 6, 7]
         position_restraint_energy = {}
         for stage in all_stages:
             # Load trajectory
@@ -626,7 +632,7 @@ def do_analysis(
 
     if postprocess_trapped or postprocess_pocket:
         if postprocess_pocket:
-            all_stages = [1, 2, 3, 4, 5, 6, 7]
+            all_stages = [1, 4, 5, 6, 7]
         else:
             all_stages = [1]
         for stage in all_stages:
@@ -638,8 +644,6 @@ def do_analysis(
                 ]
             stage_to_lambda_state = {
                 "stage1": 0,
-                "stage2": 1,
-                "stage3": 2,
                 "stage4": 10,
                 "stage5": 10,
                 "stage6": 2,
