@@ -565,7 +565,7 @@ def do_analysis(
 
     if do_distances:
         distances = {}
-        all_stages = [1, 2, 3, 4, 5, 6, 7]
+        all_stages = [1, 4, 5, 6, 7]
         for stage in all_stages:
             trajectory = load_universe(
                 topology=f"{cycle_directory}/stage{stage}/prod/topol.tpr",
