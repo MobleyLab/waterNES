@@ -6,5 +6,5 @@ for system in "$@"; do
       --error="$SYSTEM_DIR"/slurm_output/analysis.err \
       --output="$SYSTEM_DIR"/slurm_output/analysis.out \
       --export=SYSTEM="$system" \
-      hpc3/do-analysis.sh
+      hpc3/do-postprocessing.sh
 done
