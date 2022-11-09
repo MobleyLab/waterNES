@@ -717,7 +717,7 @@ def do_analysis(
             distance=analysis["distances"]["stage1"]["closest water"],
         )
         restraint_c12 = get_solvent_restraint_c12(
-            cycle_directory=cycle_directory, units="kJ/mol*Å*12"
+            cycle_directory=cycle_directory, units="kJ/mol*Å^12"
         )
         solvent_restraint_energy_old = vdw_repulsive_energy(
             c12=restraint_c12,
