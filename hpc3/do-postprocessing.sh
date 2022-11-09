@@ -13,4 +13,4 @@ source /data/homezvol2/pmerz/.bash_profile
 module load anaconda
 conda activate waterNES
 
-python scripts/analyze.py "$SYSTEM" systems/"$SYSTEM"/run1 --read --doFreeEnergyOfStages 1 4 7 6 6.1 6.2 6.3 6.4 6.5 6.6 6.7 5
+python scripts/analyze.py "$SYSTEM" systems/"$SYSTEM"/run1 --read --postProcessTrapped --postProcessPocket

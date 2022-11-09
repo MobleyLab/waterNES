@@ -1,10 +1,11 @@
 import argparse
 import os
+import pathlib
 import pickle
 import shutil
 import sys
 import warnings
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import alchemlyb
 import MDAnalysis as mda
@@ -15,8 +16,6 @@ from alchemlyb.postprocessors.units import get_unit_converter
 from alchemlyb.preprocessing import slicing, statistical_inefficiency
 from MDAnalysis import transformations as mda_transformations
 from MDAnalysis.analysis import distances as mda_distances
-from MDAnalysis.analysis.base import AnalysisFromFunction
-from MDAnalysis.coordinates.memory import MemoryReader
 from pymbar.timeseries import ParameterError
 
 sys.path.append(os.getcwd())
@@ -78,7 +77,7 @@ def get_pocket_selection_string(universe):
 
 
 def calculate_distances(universe, pocket_selection_string):
-    reference = universe.select_atoms("resname ATT")
+    attachment = universe.select_atoms("resname ATT")
     trapped_water = universe.select_atoms("resname MOL and name O")
     solvent = universe.select_atoms("resname HOH and name O")
     pocket = universe.select_atoms(pocket_selection_string)
@@ -91,19 +90,19 @@ def calculate_distances(universe, pocket_selection_string):
     }
     for _ in universe.trajectory:
         distance_trapped_water = mda_distances.distance_array(
-            reference.positions,
+            attachment.positions,
             trapped_water.positions,
             box=universe.dimensions,
         ).flatten()
         distance_solvent = np.sort(
             mda_distances.distance_array(
-                reference.positions,
+                attachment.positions,
                 solvent.positions,
                 box=universe.dimensions,
             ).flatten()
         )
         distance_pocket = mda_distances.distance_array(
-            reference.positions,
+            attachment.positions,
             pocket.positions,
             box=universe.dimensions,
         )
@@ -123,7 +122,7 @@ def calculate_distances(universe, pocket_selection_string):
 
 
 def calculate_mbar_inner(
-    stages: Iterable,
+    stages: List[str],
     cycle_directory: str,
     drop_first: bool,
     file_modifier: Optional[str],
@@ -159,7 +158,7 @@ def calculate_mbar_inner(
 
 
 def calculate_mbar(
-    stages: Iterable,
+    stages: List[str],
     cycle_directory: str,
     drop_first: bool,
     file_modifier: Optional[str],
@@ -200,18 +199,29 @@ def calculate_mbar(
 
 
 def get_conversion_factor(input_units: str, output_units: str) -> float:
-    if input_units != "kJ/mol/nm^2":
-        raise NotImplementedError(f"Unknown input units {input_units}")
-    if output_units == "kJ/mol/nm^2":
-        return 1
-    elif output_units == "kcal/mol/nm^2":
-        return 0.239006
-    elif output_units == "kJ/mol/Å^2":
-        return 0.01
-    elif output_units == "kcal/mol/Å^2":
-        return 0.239006 * 0.01
+    conversions = {
+        "kJ/mol/nm^2": {
+            "kJ/mol/nm^2": 1,
+            "kcal/mol/nm^2": 0.239006,
+            "kJ/mol/Å^2": 0.01,
+            "kcal/mol/Å^2": 0.239006 * 0.01,
+        },
+        "kJ/mol*nm^12": {
+            "kJ/mol*nm^12": 1,
+            "kcal/mol*nm^12": 0.239006,
+            "kJ/mol*Å^12": 1e12,
+            "kcal/mol*Å^12": 0.239006 * 1e12,
+        },
+    }
 
-    raise NotImplementedError(f"Unknown output units {output_units}")
+    if input_units not in conversions:
+        raise NotImplementedError(f"Unknown input units {input_units}")
+    if output_units not in conversions[input_units]:
+        raise NotImplementedError(
+            f"Unknown output units {output_units} " f"for input unit {input_units}"
+        )
+
+    return conversions[input_units][output_units]
 
 
 def get_pocket_restraint_force_constant(cycle_directory: str, units: str) -> float:
@@ -246,14 +256,33 @@ def get_water_restraint_force_constant(cycle_directory: str, units: str) -> floa
     )
 
 
+def get_solvent_restraint_c12(cycle_directory: str, units: str) -> float:
+    restraint_c12 = None
+    with open(f"{cycle_directory}/../system.top") as top_file:
+        block_found = False
+        for line in top_file:
+            if "nonbond_params" in line:
+                block_found = True
+                continue
+            if block_found and not line.startswith(";") and len(line.split()) == 5:
+                fields = line.split()
+                assert fields[0] == "attachX"
+                sigma = float(fields[-2])
+                epsilon = float(fields[-1])
+                assert sigma < 0  # This signifies a purely repulsive potential in gmx
+                restraint_c12 = 4 * epsilon * (sigma ** 12)
+                break
+
+    assert restraint_c12 is not None
+    return restraint_c12 * get_conversion_factor(
+        input_units="kJ/mol*nm^12", output_units=units
+    )
+
+
 def calculate_lower_edge_free_energy(
-    cycle_directory: str, file_modifier: Optional[str]
+    cycle_directory: str, stages: List[str], file_modifier: Optional[str]
 ) -> Dict[str, FreeEnergyEstimate]:
     output_units = "kcal/mol"
-    if file_modifier is None:
-        stages = ["7", "6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "5"]
-    else:
-        stages = ["7", "6", "5"]
 
     mbar = calculate_mbar(
         stages, cycle_directory, drop_first=True, file_modifier=file_modifier
@@ -306,48 +335,69 @@ def calculate_lower_edge_free_energy(
 
 
 def calculate_upper_edge_free_energy(
-    cycle_directory: str, file_modifier: Optional[str]
+    cycle_directory: str, stages: List[str], file_modifier: Optional[str]
 ) -> Dict[str, FreeEnergyEstimate]:
     output_units = "kcal/mol"
-    if file_modifier is None:
-        stages = ["1", "2", "3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4"]
-    else:
-        stages = ["1", "2", "3", "4"]
-
     mbar = calculate_mbar(
         stages, cycle_directory, drop_first=False, file_modifier=file_modifier
     )
-    edge_d = sum(
-        [
-            get_unit_converter(output_units)(mbar.delta_f_).iloc[idx - 1][idx]
-            for idx in range(3, mbar.delta_f_.shape[0])
-        ]
-    )
-    edge_d_error = sum(
-        [
-            get_unit_converter(output_units)(mbar.d_delta_f_).iloc[idx - 1][idx]
-            for idx in range(3, mbar.d_delta_f_.shape[0])
-        ]
-    )
 
-    return {
-        "Edge B": FreeEnergyEstimate(
-            value=get_unit_converter(output_units)(mbar.delta_f_).iloc[0][1],
-            error=get_unit_converter(output_units)(mbar.d_delta_f_).iloc[0][1],
-            units=output_units,
-        ),
-        "Edge C": FreeEnergyEstimate(
-            value=get_unit_converter(output_units)(mbar.delta_f_).iloc[1][2],
-            error=get_unit_converter(output_units)(mbar.d_delta_f_).iloc[1][2],
-            units=output_units,
-        ),
-        "Edge D": FreeEnergyEstimate(
-            value=edge_d,
-            error=edge_d_error,
-            units=output_units,
-        ),
-        "upper edge overlap": mbar.overlap_matrix,
-    }
+    do_edge_m = stages == ["1", "4"]
+    do_edge_d_endpoint = stages == ["1", "2", "3", "4"]
+
+    # Sanity checks
+    if do_edge_m:
+        assert mbar.delta_f_.shape == (2, 2)
+    elif do_edge_d_endpoint:
+        assert mbar.delta_f_.shape == (4, 4)
+    else:
+        assert mbar.delta_f_.shape[0] > 4 and mbar.delta_f_.shape[1] > 4
+
+    if do_edge_m:
+        return {
+            "Edge M": FreeEnergyEstimate(
+                value=get_unit_converter(output_units)(mbar.delta_f_).iloc[0][1],
+                error=get_unit_converter(output_units)(mbar.d_delta_f_).iloc[0][1],
+                units=output_units,
+            ),
+            "upper edge overlap": mbar.overlap_matrix,
+        }
+    else:
+        if do_edge_d_endpoint:
+            edge_d = get_unit_converter(output_units)(mbar.delta_f_).iloc[2][3]
+            edge_d_error = get_unit_converter(output_units)(mbar.d_delta_f_).iloc[2][3]
+        else:
+            edge_d = sum(
+                [
+                    get_unit_converter(output_units)(mbar.delta_f_).iloc[idx - 1][idx]
+                    for idx in range(3, mbar.delta_f_.shape[0])
+                ]
+            )
+            edge_d_error = sum(
+                [
+                    get_unit_converter(output_units)(mbar.d_delta_f_).iloc[idx - 1][idx]
+                    for idx in range(3, mbar.d_delta_f_.shape[0])
+                ]
+            )
+
+        return {
+            "Edge B": FreeEnergyEstimate(
+                value=get_unit_converter(output_units)(mbar.delta_f_).iloc[0][1],
+                error=get_unit_converter(output_units)(mbar.d_delta_f_).iloc[0][1],
+                units=output_units,
+            ),
+            "Edge C": FreeEnergyEstimate(
+                value=get_unit_converter(output_units)(mbar.delta_f_).iloc[1][2],
+                error=get_unit_converter(output_units)(mbar.d_delta_f_).iloc[1][2],
+                units=output_units,
+            ),
+            "Edge D": FreeEnergyEstimate(
+                value=edge_d,
+                error=edge_d_error,
+                units=output_units,
+            ),
+            "upper edge overlap": mbar.overlap_matrix,
+        }
 
 
 def calculate_nes_edges(cycle_directory: str) -> Dict[str, FreeEnergyEstimate]:
@@ -391,9 +441,14 @@ def calculate_nes_edges(cycle_directory: str) -> Dict[str, FreeEnergyEstimate]:
     return free_energies
 
 
-def simple_restraint(force_constant: float, distance: np.ndarray) -> np.array:
+def simple_restraint(force_constant: float, distance: np.ndarray) -> np.ndarray:
     distance = np.array(distance)
     return 0.5 * force_constant * (distance ** 2)
+
+
+def vdw_repulsive_energy(c12: float, distance: np.ndarray) -> np.ndarray:
+    distance = np.array(distance)
+    return c12 * (distance ** (-12))
 
 
 def read_xvg(xvg_file_name: str) -> Tuple[Dict[str, np.ndarray], List[str]]:
@@ -408,7 +463,6 @@ def read_xvg(xvg_file_name: str) -> Tuple[Dict[str, np.ndarray], List[str]]:
             time = entries[0]
             assert time not in contents
             contents[time] = np.array([float(entry) for entry in entries[1:]])
-    num_frames = len(contents)
     return contents, header
 
 
@@ -416,15 +470,50 @@ def write_xvg(
     input_xvg_file: str,
     output_xvg_file: str,
     water_restraint_energy: Optional[np.ndarray],
+    solvent_restraint_energy: Optional[np.ndarray],
     position_restraint_energy: Optional[np.ndarray],
-    current_lambda_state: int,
-    alternative_xvg_file: Optional[str] = None,
+    current_stage: int,
 ) -> None:
     # Read existing xvg file
     input_xvg_contents, header = read_xvg(xvg_file_name=input_xvg_file)
+
+    # For variant shift & translate:
+    # Any intermediate stages on upper edge is removed, leaving only stages 1 and 4
+    # (lambda states 0 and 10).
+    # Stage 1 needs to be post-processed, since all three lambda-dependent values
+    # might have changed:
+    # - If the trapped water was exchanged, this changes the bonded and the vdw lambda
+    # - The rotation and translation changes the restraint lambda
+    # Stage 4 has no changes, only need to remove intermediate states
+    # Stage 5 and intermediate stages of lower edge have no changes
+    # Stage 6 and stage 7 have rotation and translation, need to change the restraint
+    # lambda for all intermediate stages
+    # For variant "everything is restrained at all times"
+    # Any intermediate stages on upper edge is removed, leaving only stages 1 and 4
+    # (lambda states 0 and 10).
+    # Stage 1 needs to be post-processed, since two lambda-dependent values
+    # might have changed:
+    # - If the trapped water was exchanged, this changes the bonded and the vdw lambda
+    # Stage 4 has no changes, only need to remove intermediate states
+    # Stages 5 to 7 have no changes
+    assert current_stage in [1, 4, 6, 7]
+    upper_edge = current_stage == 1 or current_stage == 4
+
+    # Do some input sanity checks
+    num_entries = len(input_xvg_contents)
+    if water_restraint_energy is not None:
+        assert len(water_restraint_energy) == num_entries
+        assert current_stage == 1
+    if solvent_restraint_energy is not None:
+        assert solvent_restraint_energy.shape == (num_entries, 2)
+        assert current_stage == 1
+    if position_restraint_energy is not None:
+        assert len(position_restraint_energy) == num_entries
+        assert current_stage in [1, 6, 7]
+
     # This is a bit brittle (i.e., depending on our exact simulation setup),
     # but for now, we'll just hardcode the xvg file format
-    entry = {
+    xvg_format = {
         "potential": 0,
         "vdw-lambda": 1,
         "bonded-lambda": 2,
@@ -442,14 +531,23 @@ def write_xvg(
         "foreign lambda 10": 14,
         "pV": 15,
     }
-    num_entries = len(input_xvg_contents)
-    if water_restraint_energy is not None:
-        assert len(water_restraint_energy) == num_entries
-        assert current_lambda_state == 0
-    if position_restraint_energy is not None:
-        assert len(position_restraint_energy) == num_entries
+    # Non-exhaustive sanity check
+    assert all(
+        len(input_xvg_contents[time]) == len(xvg_format) for time in input_xvg_contents
+    )
+    # The stages as defined by the water NES protocol are not identical to the index
+    # of lambda states used by GROMACS
+    stage_to_lambda_state = {
+        "stage 1": 0,
+        "stage 4": 10,
+        "stage 5": 10,
+        "stage 6": 2,
+        "stage 7": 1,
+    }
+    current_lambda_state = stage_to_lambda_state[f"stage {current_stage}"]
 
-    if position_restraint_energy is not None:
+    # If we remove intermediate stages, we need to update the header
+    if upper_edge:
         header.remove(
             '@ s5 legend "\\xD\\f{}H \\xl\\f{} to (0.0000, 1.0000, 0.0000)"\n'
         )
@@ -486,64 +584,74 @@ def write_xvg(
         )
         header.append('@ s6 legend "pV (kJ/mol)"\n')
 
-    if (alternative_xvg_file is not None) and (current_lambda_state == 10):
-        # The alternative file leaves stages 4 and 5 unchanged, removes only the
-        # intermediate states.
-        with open(alternative_xvg_file, "w") as out_xvg:
-            out_xvg.write("".join(line for line in header))
-            for idx, time in enumerate(input_xvg_contents):
-                xvg_line = input_xvg_contents[time]
-                for lambda_idx in range(1, 10):
-                    xvg_line[entry[f"foreign lambda {lambda_idx}"]] = np.nan
-                out_xvg.write(
-                    f"{time} "
-                    + " ".join(
-                        f"{entry:#.8g}" for entry in xvg_line if not np.isnan(entry)
-                    )
-                    + "\n"
-                )
+        foreign_lambdas_to_remove = range(1, 10)
+    else:
+        foreign_lambdas_to_remove = []
+
+    def other_lambdas():
+        r"""
+        A generator yielding the indexes (from xvg_format) of all foreign lambda
+        states which are neither the current lambda state nor about to be deleted.
+        Used to loop over the other lambda states relevant to the current one.
+
+        Uses the following variables from the outer scope:
+        - xvg_format
+        - foreign_lambdas_to_remove
+        - current_lambda_state
+
+        Returns
+        -------
+        Yields the indexes of the other lambda stages that are not removed
+        """
+        for key in xvg_format:
+            if not key.startswith("foreign lambda"):
+                continue
+            foreign_lambda = int(key.replace("foreign lambda ", ""))
+            if foreign_lambda in foreign_lambdas_to_remove:
+                continue
+            if foreign_lambda == current_lambda_state:
+                continue
+            yield xvg_format[key]
 
     with open(output_xvg_file, "w") as out_xvg:
         out_xvg.write("".join(line for line in header))
 
         for idx, time in enumerate(input_xvg_contents):
             xvg_line = input_xvg_contents[time]
-            for lambda_idx in range(1, 10):
-                xvg_line[entry[f"foreign lambda {lambda_idx}"]] = np.nan
+            for lambda_idx in foreign_lambdas_to_remove:
+                xvg_line[xvg_format[f"foreign lambda {lambda_idx}"]] = np.nan
 
             if water_restraint_energy is not None:
-                old_value = xvg_line[entry["bonded-lambda"]]
+                # Replace water restraint energy (bonded lambda)
+                old_value = xvg_line[xvg_format["bonded-lambda"]]
                 new_value = water_restraint_energy[idx]
-                xvg_line[entry["bonded-lambda"]] = new_value
-                for lambda_idx in [10]:
-                    xvg_line[entry[f"foreign lambda {lambda_idx}"]] += (
-                        new_value - old_value
-                    )
+                xvg_line[xvg_format["bonded-lambda"]] = new_value
+                for lambda_idx in other_lambdas():
+                    xvg_line[lambda_idx] += new_value - old_value
+
+            if solvent_restraint_energy is not None:
+                # Replace solvent restraint energy (vdw lambda)
+                # Note that in the vdw case, we are not replacing the lambda energy,
+                # we are adding / removing from it since this is term involving all
+                # solvent molecules, but we post-processed only (at most) two of them
+                old_value, new_value = solvent_restraint_energy[idx]
+                xvg_line[xvg_format["vdw-lambda"]] += new_value - old_value
+                for lambda_idx in other_lambdas():
+                    xvg_line[lambda_idx] += new_value - old_value
 
             if position_restraint_energy is not None:
-                for lambda_idx in range(3, 10):
-                    xvg_line[entry[f"foreign lambda {lambda_idx}"]] = np.nan
-                old_value = xvg_line[entry["restraint-lambda"]]
+                # Replace positional restraint energy (restraint lambda)
+                old_value = xvg_line[xvg_format["restraint-lambda"]]
                 new_value = position_restraint_energy[idx]
-                xvg_line[entry["restraint-lambda"]] = new_value
-                if current_lambda_state == 10:
-                    xvg_line[entry["potential"]] += new_value - old_value
-                    for lambda_idx in [0]:
-                        xvg_line[entry[f"foreign lambda {lambda_idx}"]] += (
-                            old_value - new_value
-                        )
-                else:
-                    xvg_line[entry[f"foreign lambda 10"]] += new_value - old_value
+                xvg_line[xvg_format["restraint-lambda"]] = new_value
+                for lambda_idx in other_lambdas():
+                    xvg_line[lambda_idx] += new_value - old_value
 
             out_xvg.write(
                 f"{time} "
                 + " ".join(f"{entry:#.8g}" for entry in xvg_line if not np.isnan(entry))
                 + "\n"
             )
-
-    if (alternative_xvg_file is not None) and (current_lambda_state != 10):
-        # The alternative file is identical to the new file for other lambda states
-        shutil.copy2(output_xvg_file, alternative_xvg_file)
 
 
 def do_analysis(
@@ -553,7 +661,7 @@ def do_analysis(
     do_distances: bool,
     postprocess_trapped: bool,
     postprocess_pocket: bool,
-    do_free_energy: bool,
+    free_energy_stages: List[str],
 ):
     reference = load_universe(
         topology=f"{cycle_directory}/stage1/min/topol.tpr",
@@ -566,13 +674,29 @@ def do_analysis(
         with open(f"analysis{system}.pickle", "rb") as in_file:
             analysis = pickle.load(in_file)
 
+    # We need the distances in stage 1 to post-process the trapped water,
+    # so if we haven't read them, we need to calculate them now
+    # (and we'll just calculate them for all stages for further analysis)
     if postprocess_trapped and "distances" not in analysis:
         do_distances = True
 
+    # all_full_stages contains all stages which have production simulations
+    # and are not lambda windows
+    all_full_stages = [
+        stage
+        for stage in [1, 2, 3, 4, 5, 6, 7]
+        if pathlib.Path(f"{cycle_directory}/stage{stage}/prod/topol.tpr").is_file()
+        and pathlib.Path(f"{cycle_directory}/stage{stage}/prod/traj_comp.xtc").is_file()
+    ]
+    print(f"DEBUG: all_full_stages = {all_full_stages}")
+    all_non_restrained_stages = [
+        stage for stage in all_full_stages if stage != 4 and stage != 5
+    ]
+    print(f"DEBUG: all_non_restrained_stages = {all_non_restrained_stages}")
+
     if do_distances:
         distances = {}
-        all_stages = [1, 4, 5, 6, 7]
-        for stage in all_stages:
+        for stage in all_full_stages:
             trajectory = load_universe(
                 topology=f"{cycle_directory}/stage{stage}/prod/topol.tpr",
                 trajectory=f"{cycle_directory}/stage{stage}/prod/traj_comp.xtc",
@@ -583,6 +707,7 @@ def do_analysis(
         analysis["distances"] = distances
 
     trapped_restraint_energy = None
+    solvent_restraint_energy = None
     if postprocess_trapped:
         restraint_force_constant = get_water_restraint_force_constant(
             cycle_directory=cycle_directory, units="kJ/mol/Å^2"
@@ -591,12 +716,25 @@ def do_analysis(
             force_constant=restraint_force_constant,
             distance=analysis["distances"]["stage1"]["closest water"],
         )
+        restraint_c12 = get_solvent_restraint_c12(
+            cycle_directory=cycle_directory, units="kJ/mol*Å*12"
+        )
+        solvent_restraint_energy_old = vdw_repulsive_energy(
+            c12=restraint_c12,
+            distance=analysis["distances"]["stage1"]["trapped water"],
+        )
+        solvent_restraint_energy_new = vdw_repulsive_energy(
+            c12=restraint_c12,
+            distance=analysis["distances"]["stage1"]["closest water"],
+        )
+        solvent_restraint_energy = np.array(
+            [solvent_restraint_energy_old, solvent_restraint_energy_new]
+        )
 
     position_restraint_energy = None
     if postprocess_pocket:
-        all_stages = [1, 4, 5, 6, 7]
         position_restraint_energy = {}
-        for stage in all_stages:
+        for stage in all_non_restrained_stages:
             # Load trajectory
             trajectory = load_universe(
                 topology=f"{cycle_directory}/stage{stage}/prod/topol.tpr",
@@ -632,72 +770,70 @@ def do_analysis(
 
     if postprocess_trapped or postprocess_pocket:
         if postprocess_pocket:
-            all_stages = [1, 4, 5, 6, 7]
+            # the pocket needs to be reset in all non-restrained stages
+            all_stages = all_non_restrained_stages
         else:
+            # trapped water postprocessing happens only in stage 1
             all_stages = [1]
         for stage in all_stages:
+            # Backup old xvg file
+            backup_file = pathlib.Path(
+                f"{cycle_directory}/stage{stage}/prod/dhdl_backup.xvg"
+            )
+            counter = 1
+            while backup_file.is_file():
+                backup_file = pathlib.Path(
+                    f"{cycle_directory}/stage{stage}/prod/dhdl_backup.xvg.{counter}"
+                )
+            shutil.copy2(
+                f"{cycle_directory}/stage{stage}/prod/dhdl.xvg",
+                backup_file,
+            )
             # Write modified xvg file
             position_restraint_energy_for_stage = None
             if postprocess_pocket:
                 position_restraint_energy_for_stage = position_restraint_energy[
                     f"stage{stage}"
                 ]
-            stage_to_lambda_state = {
-                "stage1": 0,
-                "stage4": 10,
-                "stage5": 10,
-                "stage6": 2,
-                "stage7": 1,
-            }
+
             write_xvg(
                 input_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl.xvg",
-                output_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl_mod.xvg",
+                output_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl.xvg",
                 water_restraint_energy=trapped_restraint_energy if stage == 1 else None,
-                position_restraint_energy=position_restraint_energy_for_stage,
-                current_lambda_state=stage_to_lambda_state[f"stage{stage}"],
-                alternative_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl_alt.xvg"
-                if stage_to_lambda_state[f"stage{stage}"] == 10
+                solvent_restraint_energy=solvent_restraint_energy
+                if stage == 1
                 else None,
+                position_restraint_energy=position_restraint_energy_for_stage,
+                current_stage=stage,
             )
 
-    if do_free_energy:
+    if free_energy_stages:
+        # For edge J, Yunhui did 3 repetitions and found
+        #   -6.16,-6.08,-6.12 kcal/mol for tip3p water  --> -6.12 +- 0.03
+        #   -6.13,-6.12,-6.13 kcal/mol for tip4p water  --> -6.1267 +- 0.005
+        # To simplify things, we'll use -6.125 +- 0.01 for all cases. It's not 100%
+        # precise, but well within other assumptions made in the process.
         free_energies = {
             "Edge I": FreeEnergyEstimate(value=0, error=0, units="kcal/mol"),
-            "Edge J": FreeEnergyEstimate(value=-6.13, error=0.01, units="kcal/mol"),
-        }
-        free_energies_modified = {
-            "Edge I": FreeEnergyEstimate(value=0, error=0, units="kcal/mol"),
-            "Edge J": FreeEnergyEstimate(value=-6.13, error=0.01, units="kcal/mol"),
-        }
-        free_energies_alternative = {
-            "Edge I": FreeEnergyEstimate(value=0, error=0, units="kcal/mol"),
-            "Edge J": FreeEnergyEstimate(value=-6.13, error=0.01, units="kcal/mol"),
+            "Edge J": FreeEnergyEstimate(value=-6.125, error=0.01, units="kcal/mol"),
         }
         free_energies.update(
-            calculate_upper_edge_free_energy(cycle_directory, file_modifier=None)
+            calculate_upper_edge_free_energy(
+                cycle_directory=cycle_directory,
+                stages=[stage for stage in free_energy_stages if float(stage) < 5],
+                file_modifier="alt",
+            )
         )
         free_energies.update(
-            calculate_lower_edge_free_energy(cycle_directory, file_modifier=None)
-        )
-        free_energies_modified.update(
-            calculate_upper_edge_free_energy(cycle_directory, file_modifier="mod")
-        )
-        free_energies_modified.update(
-            calculate_lower_edge_free_energy(cycle_directory, file_modifier="mod")
-        )
-        free_energies_alternative.update(
-            calculate_upper_edge_free_energy(cycle_directory, file_modifier="alt")
-        )
-        free_energies_alternative.update(
-            calculate_lower_edge_free_energy(cycle_directory, file_modifier="alt")
+            calculate_lower_edge_free_energy(
+                cycle_directory=cycle_directory,
+                stages=[stage for stage in free_energy_stages if float(stage) > 4],
+                file_modifier=None,
+            )
         )
         nes_edges = calculate_nes_edges(cycle_directory)
         free_energies.update(nes_edges)
-        free_energies_modified.update(nes_edges)
-        free_energies_alternative.update(nes_edges)
         analysis["free energy"] = free_energies
-        analysis["free energy modified"] = free_energies_modified
-        analysis["free energy alternative"] = free_energies_alternative
 
     with open(f"analysis{system}.pickle", "wb") as out_file:
         pickle.dump(analysis, out_file)
@@ -723,14 +859,22 @@ def command_line_entry_point():
     parser.add_argument(
         "--postProcessTrapped",
         action="store_true",
-        help="Postprocess the trapped water restraint in stage 1",
+        help="Postprocess the trapped water and solvent restraint in stage 1",
     )
     parser.add_argument(
         "--postProcessPocket",
         action="store_true",
         help="Postprocess the binding pocket restraints",
     )
-    parser.add_argument("--fe", action="store_true", help="Do free energy calculations")
+    parser.add_argument(
+        "--doFreeEnergyOfStages",
+        nargs="+",
+        type=str,
+        help="Do free energy calculations. This option takes a list of stages which "
+        "are used in the calculation, e.g. 1 4 5 6 7 for the shortened loop, or "
+        "1 2 3 3.1 3.2 3.3 3.4 3.5 3.6 3.7 4 5 6.1 6.2 6.3 6.4 6.5 6.6 6.7 6 7 "
+        "for the full loop with lambda windows.",
+    )
     args = parser.parse_args()
     do_analysis(
         system=args.system,
@@ -739,7 +883,7 @@ def command_line_entry_point():
         do_distances=args.dist,
         postprocess_trapped=args.postProcessTrapped,
         postprocess_pocket=args.postProcessPocket,
-        do_free_energy=args.fe,
+        free_energy_stages=args.doFreeEnergyOfStages,
     )
 
 
