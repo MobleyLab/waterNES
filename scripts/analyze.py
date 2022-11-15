@@ -800,7 +800,7 @@ def do_analysis(
                 input_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl.xvg",
                 output_xvg_file=f"{cycle_directory}/stage{stage}/prod/dhdl.xvg",
                 water_restraint_energy=trapped_restraint_energy if stage == 1 else None,
-                solvent_restraint_energy=solvent_restraint_energy
+                solvent_restraint_energy=solvent_restraint_energy.transpose()
                 if stage == 1
                 else None,
                 position_restraint_energy=position_restraint_energy_for_stage,
