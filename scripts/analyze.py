@@ -785,6 +785,7 @@ def do_analysis(
                 backup_file = pathlib.Path(
                     f"{cycle_directory}/stage{stage}/prod/dhdl_backup.xvg.{counter}"
                 )
+                counter += 1
             shutil.copy2(
                 f"{cycle_directory}/stage{stage}/prod/dhdl.xvg",
                 backup_file,
