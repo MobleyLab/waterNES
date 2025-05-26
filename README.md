@@ -1,5 +1,7 @@
 # waterNES
 This repository contains workflows to calculate relative free energies
+(RBFE) between ligands that bind to target protein with different numbers of
+trapped water molecules. The RBFE is calculated
 using non-equilibrium switching for buried water molecules. These
 workflows operate on thermodynamic cycles like these:
 
