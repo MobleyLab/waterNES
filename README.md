@@ -1,15 +1,18 @@
 # waterNES
 This repository contains workflows to:
-1.  calculate absolute binding free energies of trapped waters in proteins/protein-ligand complexes using
-the following thermodynamic cycle
-![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/abfe_cycle_full.png?raw=true)
+1. to calculate RBFEs between ligand pairs with different numbers of trapped water molecules and implementing
+a fully NES-based workflow, using thermodynamic cycle
+![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/NES-Total-Chemdraw.png?raw=true)
+
 2. calculate relative free energies (RBFE) between ligands that bind to target protein with different numbers of
 trapped water molecules. The RBFE is calculated using non-equilibrium switching (NES) for trapped water molecules
 and implements the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/rbfe_cycle_short.png?raw=true)
-3. to calculate RBFEs between ligand pairs with different numbers of trapped water molecules and implementing 
-a fully NES-based workflow, using thermodynamic cycle
-![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/NES-Total-Chemdraw.png?raw=true)
+
+3. calculate absolute binding free energies of trapped waters in proteins/protein-ligand complexes using
+the following thermodynamic cycle
+![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/abfe_cycle_full.png?raw=true)
+
 
 The purple cycle includes additional restraints for the protein, and
 is preferred when it is likely that the binding site might collapse
