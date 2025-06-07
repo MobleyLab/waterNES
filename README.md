@@ -1,15 +1,22 @@
 # waterNES
+
+This repository serves as the main repository for the following two open access publications:
+
+1. Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher Bayly and David Mobley; ChemRxiv 2025 (DOI: 10.26434/chemrxiv-2025-xtjl3)
+
+2. Leveraging a Separation of States Method for Relative Binding Free Energy Calculations in Systems with Trapped Waters;
+Swapnil Wagle, Pascal T. Merz, Yunhui Ge, Christopher I. Bayly and David L. Mobley; J. Chem. Theory Comput. 2024, 20, 11013−11031 (https://pubs.acs.org/doi/10.1021/acs.jctc.4c01145)
+
+
 This repository contains workflows to:
-1. to calculate RBFEs between ligand pairs with different numbers of trapped water molecules and implementing
-a fully NES-based workflow, using thermodynamic cycle
+1. calculate relative free energies (RBFEs) between ligand pairs with different numbers of trapped water molecules and implementing a non-equilibrium switching (NES)-based workflow, using thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/NES-Total-Chemdraw.png?raw=true)
 
-2. calculate relative free energies (RBFE) between ligands that bind to target protein with different numbers of
-trapped water molecules. The RBFE is calculated using non-equilibrium switching (NES) for trapped water molecules
-and implements the following thermodynamic cycle
+2. calculate RBFEs between ligands that bind to target protein with different numbers of
+trapped water molecules. The RBFE is calculated using the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/rbfe_cycle_short.png?raw=true)
 
-3. calculate absolute binding free energies of trapped waters in proteins/protein-ligand complexes using
+3. calculate absolute binding free energies (ABFEs) of trapped waters in proteins/protein-ligand complexes using
 the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/abfe_cycle_full.png?raw=true)
 
