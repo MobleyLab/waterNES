@@ -8,23 +8,27 @@ This repository serves as the main repository for the following two open access 
 Swapnil Wagle, Pascal T. Merz, Yunhui Ge, Christopher I. Bayly and David L. Mobley; J. Chem. Theory Comput. 2024, 20, 11013−11031 (https://pubs.acs.org/doi/10.1021/acs.jctc.4c01145)
 
 
-This repository contains workflows to:
-1. calculate relative free energies (RBFEs) between ligand pairs with different numbers of trapped water molecules and implementing a non-equilibrium switching (NES)-based workflow, using thermodynamic cycle
+This repository contains workflows to simulate the following thermodynamic cycles:
+
+Thermodynamic cycle 1. to calculate relative free energies (RBFEs) between ligand pairs with different numbers of trapped water molecules and implementing a non-equilibrium switching (NES)-based workflow, using thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/NES-Total-Chemdraw.png?raw=true)
 
-2. calculate RBFEs between ligands that bind to target protein with different numbers of
+Here, ligand A is shown in green and ligand B is shown in purple. Both ligands are bound to the protein (shown in yellow). A trapped water is shown in red, while a decoupled trapped water is shown in pale red.
+A black cross on the trapped water represents harmonic restraint, a dashed circle around the trapped water represents solvent repulsion potential applied at the binding site of the trapped water.
+NES-Total, Edge H and Edge J consitute the complex leg of the RBFE calculation. NES-Solvent represents the solvent leg of the RBFE calculation. 
+
+Thermodynamic cycle 2. to calculate RBFEs between ligands that bind to target protein with different numbers of
 trapped water molecules. The RBFE is calculated using the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/rbfe_cycle_short.png?raw=true)
 
-3. calculate absolute binding free energies (ABFEs) of trapped waters in proteins/protein-ligand complexes using
+In addition to the description for the thermodynamic cycle in 1., te black cross on the protein represents position restraints on the binding site. In this figure, only the complex leg of the RBFE calculation is shown.
+The solvent leg of the RBFE calculation is same as shown for the thermodynamic cycle for 1. 
+
+Thermodynamic cycle 3. to calculate absolute binding free energies (ABFEs) of trapped waters in proteins/protein-ligand complexes using
 the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/abfe_cycle_full.png?raw=true)
 
-
-The purple cycle includes additional restraints for the protein, and
-is preferred when it is likely that the binding site might collapse
-once the water is removed. In all other cases, the simpler blue cycle
-can be used.
+Here, the absolute binding free energy of a trapped water is calculated, i.e., the free energy to displace a water from a protein's binding site. 
 
 ### Cycle branches
 * **A**, the target branch: We will find its value by summing all
