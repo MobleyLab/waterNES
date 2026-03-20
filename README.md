@@ -2,12 +2,12 @@
 
 This repository serves as the main repository for the following three open-access publications:
 
-1. A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; J. Phys. Chem. B 2026, 130, 2869-2882 ([text](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189))
+1. A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189))
 
-1. Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher I. Bayly and L. David Mobley; J. Chem. Theory Comput. 2025, 21, 7593-7604 ([text](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758))
+2. Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher I. Bayly and L. David Mobley; *J. Chem. Theory Comput.* **2025**, 21, 7593-7604 ([RBFE NES Paper](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758))
 
-2. Leveraging a Separation of States Method for Relative Binding Free Energy Calculations in Systems with Trapped Waters;
-Swapnil Wagle, Pascal T. Merz, Yunhui Ge, Christopher I. Bayly and David L. Mobley; J. Chem. Theory Comput. 2024, 20, 11013−11031 ([text](https://pubs.acs.org/doi/10.1021/acs.jctc.4c01145))
+3. Leveraging a Separation of States Method for Relative Binding Free Energy Calculations in Systems with Trapped Waters;
+Swapnil Wagle, Pascal T. Merz, Yunhui Ge, Christopher I. Bayly and David L. Mobley; *J. Chem. Theory Comput.* **2024**, 20, 11013−11031 ([ABFE-RBFE Paper](https://pubs.acs.org/doi/10.1021/acs.jctc.4c01145))
 
 
 This repository contains workflows to simulate the following thermodynamic cycles:
