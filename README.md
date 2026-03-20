@@ -1,10 +1,10 @@
 # waterNES
 
-##* *A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
+## **A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
 
 Supports:
 - Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding
-  - *This has two versions: an NES version, and an NES + equilibrium free energy calculation version*
+  - *This has two versions: a fully NES version, and an NES + equilibrium free energy calculation version*
 - Absolute binding free energy (ABFE) calculations of trapped/buried water molecules in proteins or protein-ligand complexes
   - *This is performed using NES + equilibrium free energy calculation only*
 - Free energy calculation of displacing a water molecule from a C<sub>90</sub> fullerene cavity
@@ -14,11 +14,11 @@ Supports:
 
 ### Associated publications:
 
-1. A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189))
+1. (Fullerene free energy calculations)A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189))
 
-2. Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher I. Bayly and L. David Mobley; *J. Chem. Theory Comput.* **2025**, 21, 7593-7604 ([RBFE NES Paper](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758))
+2. (RBFE trapped/buried waters- fully NES version) Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher I. Bayly and L. David Mobley; *J. Chem. Theory Comput.* **2025**, 21, 7593-7604 ([RBFE NES Paper](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758))
 
-3. Leveraging a Separation of States Method for Relative Binding Free Energy Calculations in Systems with Trapped Waters;
+3. (RBFE trapped/buried waters- NES + equilibrium free energy version,  ABFE of trapped/buried waters) Leveraging a Separation of States Method for Relative Binding Free Energy Calculations in Systems with Trapped Waters;
 Swapnil Wagle, Pascal T. Merz, Yunhui Ge, Christopher I. Bayly and David L. Mobley; *J. Chem. Theory Comput.* **2024**, 20, 11013−11031 ([ABFE-RBFE Paper](https://pubs.acs.org/doi/10.1021/acs.jctc.4c01145))
 
 
