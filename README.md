@@ -2,42 +2,42 @@
 
 **A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
 
-The method implemented here can perform the following calculations:
-- Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding
-  - *This has two versions: a fully NES version, and an NES + equilibrium free energy calculation version*
-- Absolute binding free energy (ABFE) calculation of trapped/buried water molecules in proteins or protein-ligand complexes
-  - *This is performed using NES + equilibrium free energy calculation only*
-- Fullerene free energy calculations 
-  - *NES free energy calculation of displacing a water molecule from a C<sub>90</sub> fullerene cavity, performed using  free energy calculations only*
-  - *Free energy calculation of solvent water equilibration inside a C<sub>90</sub> fullerene cavity using Hamiltonia replica exchange (HREX) simulation*
+The methods implemented here can perform the following free energy calculations:
+- Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding.
+  - *This has two versions: a fully NES version (Check thermodynamic cycle 1 below), and an NES + equilibrium free energy calculation version (Check thermodynamic cycle 2 below.).*
+- Absolute binding free energy (ABFE) calculation of trapped/buried water molecules in proteins or protein-ligand complexes.
+  - *This is performed using NES + equilibrium free energy calculation only (Check thermodynamic cycle 3 below).*
+- Fullerene free energy calculations. 
+  - *NES free energy calculation of displacing a water molecule from a C<sub>90</sub> fullerene cavity, performed using  free energy calculations.*
+  - *Free energy calculation of solvent water equilibration inside a C<sub>90</sub> fullerene cavity using Hamiltonia replica exchange (HREX) simulation.*
 
 ### Associated publications:
 
-1. *(Fullerene free energy calculations)* A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189)) <a href="https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189" target="_blank">[Fullerene Paper]</a>
+1. *[Fullerene free energy calculations]* A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189))
 
-2. *(RBFE trapped/buried waters- fully NES version)* Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher I. Bayly and L. David Mobley; *J. Chem. Theory Comput.* **2025**, 21, 7593-7604 ([RBFE NES Paper](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758))
+2. *[RBFE trapped/buried waters- fully NES version]* Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher I. Bayly and L. David Mobley; *J. Chem. Theory Comput.* **2025**, 21, 7593-7604 ([RBFE NES Paper](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758))
 
-3. *(RBFE trapped/buried waters- NES + equilibrium free energy version,  ABFE of trapped/buried waters)* Leveraging a Separation of States Method for Relative Binding Free Energy Calculations in Systems with Trapped Waters;
+3. *[RBFE trapped/buried waters- NES + equilibrium free energy version,  ABFE of trapped/buried waters]* Leveraging a Separation of States Method for Relative Binding Free Energy Calculations in Systems with Trapped Waters;
 Swapnil Wagle, Pascal T. Merz, Yunhui Ge, Christopher I. Bayly and David L. Mobley; *J. Chem. Theory Comput.* **2024**, 20, 11013−11031 ([ABFE-RBFE Paper](https://pubs.acs.org/doi/10.1021/acs.jctc.4c01145))
 
 
 This repository contains workflows to simulate the following thermodynamic cycles:
 
-Thermodynamic cycle 1. to calculate relative free energies (RBFEs) between ligand pairs with different numbers of trapped water molecules and implementing a non-equilibrium switching (NES)-based workflow, using thermodynamic cycle
+Thermodynamic cycle 1 to calculate relative free energies (RBFEs) between ligand pairs with different numbers of trapped water molecules and implementing a non-equilibrium switching (NES)-based workflow, using thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/NES-Total-Chemdraw.png?raw=true)
 
 Here, ligand A is shown in green and ligand B is shown in purple. Both ligands are bound to the protein (shown in yellow). A trapped water is shown in red, while a decoupled trapped water is shown in pale red.
 A black cross on the trapped water represents harmonic restraint, a dashed circle around the trapped water represents solvent repulsion potential applied at the binding site of the trapped water.
 NES-Total, Edge H and Edge J consitute the complex leg of the RBFE calculation. NES-Solvent represents the solvent leg of the RBFE calculation. 
 
-Thermodynamic cycle 2. to calculate RBFEs between ligands that bind to target protein with different numbers of
+Thermodynamic cycle 2 to calculate RBFEs between ligands that bind to target protein with different numbers of
 trapped water molecules. The RBFE is calculated using the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/rbfe_cycle_short.png?raw=true)
 
 In addition to the description for the thermodynamic cycle 1, te black cross on the protein represents position restraints on the binding site. In this figure, only the complex leg of the RBFE calculation is shown.
 The solvent leg of the RBFE calculation is same as shown for the thermodynamic cycle for 1. 
 
-Thermodynamic cycle 3. to calculate absolute binding free energies (ABFEs) of trapped waters in proteins/protein-ligand complexes using
+Thermodynamic cycle 3 to calculate absolute binding free energies (ABFEs) of trapped waters in proteins/protein-ligand complexes using
 the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/abfe_cycle_full.png?raw=true)
 
