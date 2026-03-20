@@ -21,7 +21,7 @@ Thermodynamic cycle 2. to calculate RBFEs between ligands that bind to target pr
 trapped water molecules. The RBFE is calculated using the following thermodynamic cycle
 ![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/rbfe_cycle_short.png?raw=true)
 
-In addition to the description for the thermodynamic cycle in 1., te black cross on the protein represents position restraints on the binding site. In this figure, only the complex leg of the RBFE calculation is shown.
+In addition to the description for the thermodynamic cycle 1, te black cross on the protein represents position restraints on the binding site. In this figure, only the complex leg of the RBFE calculation is shown.
 The solvent leg of the RBFE calculation is same as shown for the thermodynamic cycle for 1. 
 
 Thermodynamic cycle 3. to calculate absolute binding free energies (ABFEs) of trapped waters in proteins/protein-ligand complexes using
