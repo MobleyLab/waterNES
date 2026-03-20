@@ -1,17 +1,18 @@
 # waterNES
 
-A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods. 
+##**A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
 
 Supports:
 - Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding
-  - This has two versions: an NES version, and an NES + equilibrium version
+  - *This has two versions: an NES version, and an NES + equilibrium free energy calculation version*
 - Absolute binding free energy (ABFE) calculations of trapped/buried water molecules in proteins or protein-ligand complexes
+  - *This is performed using NES + equilibrium free energy calculation only*
 - Free energy calculation of displacing a water molecule from a C<sub>90</sub> fullerene cavity
-  - This is done using NES calculations
+  - *This is performed using NES free energy calculations only*
 - Free energy calculation of solvent water equilibration inside a C<sub>90</sub> fullerene cavity
-  - This is done using a Hamiltonia replica exchange (HREX) simulation 
+  - *This is done using a Hamiltonia replica exchange (HREX) simulation*
 
-This repository serves as the main repository for the following three open-access publications:
+### Associated publications:
 
 1. A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189))
 
