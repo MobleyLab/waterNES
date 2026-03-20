@@ -1,11 +1,11 @@
 # waterNES
 
-## **A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
+**A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
 
-Supports:
+The method implemented here can perform the following calculations:
 - Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding
   - *This has two versions: a fully NES version, and an NES + equilibrium free energy calculation version*
-- Absolute binding free energy (ABFE) calculations of trapped/buried water molecules in proteins or protein-ligand complexes
+- Absolute binding free energy (ABFE) calculation of trapped/buried water molecules in proteins or protein-ligand complexes
   - *This is performed using NES + equilibrium free energy calculation only*
 - Fullerene free energy calculations 
   - *NES free energy calculation of displacing a water molecule from a C<sub>90</sub> fullerene cavity, performed using  free energy calculations only*
@@ -13,7 +13,7 @@ Supports:
 
 ### Associated publications:
 
-1. *(Fullerene free energy calculations)* A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189))
+1. *(Fullerene free energy calculations)* A Quadrupolar Fullerene Model System for Benchmarking Enhanced Sampling of Trapped Waters in Free Energy Calculations; Swapnil Wagle and David L. Mobley; *J. Phys. Chem. B* **2026**, 130, 2869-2882 ([Fullerene Paper](https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189)) <a href="https://pubs.acs.org/doi/full/10.1021/acs.jpcb.5c08189)" target="_blank">Fullerene Paper</a>
 
 2. *(RBFE trapped/buried waters- fully NES version)* Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher I. Bayly and L. David Mobley; *J. Chem. Theory Comput.* **2025**, 21, 7593-7604 ([RBFE NES Paper](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758))
 
