@@ -21,14 +21,36 @@ The methods implemented here can perform the following free energy calculations:
 Swapnil Wagle, Pascal T. Merz, Yunhui Ge, Christopher I. Bayly and David L. Mobley; *J. Chem. Theory Comput.* **2024**, 20, 11013−11031 ([ABFE-RBFE Paper](https://pubs.acs.org/doi/10.1021/acs.jctc.4c01145))
 
 
+:rocket: Quick start
+
+#### RBFE calculation using NES: this example run prepares the input .mdp files for GROMACS free energy calculations. Here we implement the thermodynamic cycle 1 shown below to calculate the RBFE between ligands C3d and C5d (check Figure 3 of the [RBFE NES Paper](https://pubs.acs.org/doi/full/10.1021/acs.jctc.5c00758) for their structures).
+
+```
+git clone git@github.com:MobleyLab/waterNES.git
+cd waterNES
+conda env create -f environment.yml
+conda activate waterNES
+
+waternes rbfe run --config examples/rbfe_minimal/config.yaml
+```
+Expected output: 
+- RBFE = 
+- Output files written to 'results/'
+
 This repository contains workflows to simulate the following thermodynamic cycles:
 
-Thermodynamic cycle 1 to calculate relative free energies (RBFEs) between ligand pairs with different numbers of trapped water molecules and implementing a non-equilibrium switching (NES)-based workflow, using thermodynamic cycle
-![Thermodynamic cycle](https://github.com/MobleyLab/waterNES/blob/main/docs/NES-Total-Chemdraw.png?raw=true)
+Thermodynamic cycle 1 to calculate relative free energies (RBFEs) between ligand pairs with different numbers of trapped water molecules and implementing a non-equilibrium switching (NES)-based workflow, using thermodynamic cycle:
+<img src="https://github.com/MobleyLab/waterNES/blob/main/docs/NES-Total-Chemdraw.png?raw=true" style="width:70%;" alt="Thermodynamic cycle 1">
 
 Here, ligand A is shown in green and ligand B is shown in purple. Both ligands are bound to the protein (shown in yellow). A trapped water is shown in red, while a decoupled trapped water is shown in pale red.
 A black cross on the trapped water represents harmonic restraint, a dashed circle around the trapped water represents solvent repulsion potential applied at the binding site of the trapped water.
-NES-Total, Edge H and Edge J consitute the complex leg of the RBFE calculation. NES-Solvent represents the solvent leg of the RBFE calculation. 
+NES-Total, H and J consitute the complex leg of the RBFE calculation. NES-Solvent represents the solvent leg of the RBFE calculation. 
+
+In the example run shown above, we simulate the complex and the solvent legs of the calculation. For the complex leg, we will simulate Stage 1 and Stage 4 for 6 ns. From both the trajectories, we extract 100 frames and launch the NES switches in the forward and reverse directions. Each of the NES switches run for 70 ps (10 ps, 50 ps, 10 ps for NES1, NES2 and NES3, respectively; one NES1, NES2 and NES3 switch constitute one NES-Total switch). For the solvent leg, we will simulate each of the two ligands in solvent for 6 ns and will extract 100 frames from each trajectory. From each of the frames, we will simulate the NES-Solvent switch for 50 ps.
+
+Finally, we will calculate the RBFE between the two ligands from the NES trajectories using the ```analysis``` module. 
+
+RBFE = $ΔG_{NES-Total} + \Delta G_H + \Delta G_J -  \Delta G_{NES-Solvent}$
 
 Thermodynamic cycle 2 to calculate RBFEs between ligands that bind to target protein with different numbers of
 trapped water molecules. The RBFE is calculated using the following thermodynamic cycle
