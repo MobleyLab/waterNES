@@ -1,6 +1,6 @@
 # waterNES
 
-**A reprucible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
+**A reproducible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy calculation methods.**
 
 The methods implemented here can perform the following free energy calculations:
 - Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding.
