@@ -1,0 +1,11 @@
+system : minimized.gro
+topology: system.top
+gmx : gmx
+method : rbfe_nes
+
+slurm :
+  partition : gpu
+  time : 24:00:00
+  gpus : 1
+
+output: results/
