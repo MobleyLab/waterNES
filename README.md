@@ -3,10 +3,10 @@
 **A reproducible, modular framework for free energy calculations in protein-ligand systems involving trapped/buried water molecules using non-equilibrium switching (NES) and equilibrium free energy simulations.**
 
 The methods implemented here can perform the following free energy calculations:
-- Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding.
-  - *This has two versions: a fully NES version (Check thermodynamic cycle 1 below), and an NES + equilibrium free energy calculation version (Check thermodynamic cycle 2 below.).*
+- Relative binding free energy (RBFE) calculation between two protein-ligand complexes involving trapped/buried water molecules in ligand binding. 
+  
 - Absolute binding free energy (ABFE) calculation of trapped/buried water molecules in proteins or protein-ligand complexes.
-  - *This is performed using NES + equilibrium free energy calculation only (Check thermodynamic cycle 3 below).*
+  
 - Fullerene free energy calculations. 
   - *NES free energy calculation of displacing a water molecule from a C<sub>90</sub> fullerene cavity, performed using  free energy calculations.*
   - *Free energy calculation of solvent water equilibration inside a C<sub>90</sub> fullerene cavity using Hamiltonia replica exchange (HREX) simulation.*
