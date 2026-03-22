@@ -1,0 +1,7 @@
+test
+IID
+/dfs4/dmobley-lab/swapnilw/openeye_colab/human_factor_Xa/2bq7_2bqw/run1
+--dist
+--postProcessTrapped
+--postProcessPocket
+--doFEofStages 2
