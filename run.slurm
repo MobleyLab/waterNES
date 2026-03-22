@@ -6,4 +6,4 @@ CONFIG=$1
 
 echo "Running with config: $CONFIG"
 
-bash scripts/rbfe/run.sh $CONFIG
+bash src/waternes/pipelines/rbfe/run_simulations.sh $CONFIG

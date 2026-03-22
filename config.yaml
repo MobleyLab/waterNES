@@ -1,0 +1,22 @@
+system :
+  structure: examples/rbfe_nes/sd_c3d_c5d/minimized.gro
+  topology: examples/rbfe_nes/sd_c3d_c5d/system.top
+
+gromacs:
+  executable : gmx
+
+method : rbfe_nes
+
+simulation:
+  temperature: 300
+
+nes:
+  n_switches: 100
+
+slurm :
+  partition : gpu
+  time : 4:00:00
+  gpus : 1
+
+output: 
+  directory: results/sd_c3d_c5d/
