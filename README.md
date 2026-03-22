@@ -1,5 +1,18 @@
 # waterNES
 
+## ⚠️ Development Status
+
+- `main` → stable, reproducible workflows used in older publications  
+- `sw_devel` → active development, new features, ongoing changes published in a recent paper  
+
+If you are using this code for research or reproduction, use `main`.
+
+If you want the latest updates:
+
+```
+git checkout sw_devel
+```
+
 This repository serves as the main repository for the following two open access publications:
 
 1. Advancing Binding Affinity Calculations: A Non-Equilibrium Simulations Approach for Calculation of Relative Binding Free Energies in Systems with Trapped Waters; Swapnil Wagle, Christopher Bayly and David Mobley; ChemRxiv, 2025, DOI: 10.26434/chemrxiv-2025-xtjl3 (https://chemrxiv.org/engage/chemrxiv/article-details/67d3ea816dde43c908c21ba4)
