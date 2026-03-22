@@ -1,0 +1,3 @@
+init_lambda              = 1
+delta_lambda             = -0.000004  ;1/nsteps
+define			 = -DSOL_RESTRAINT_ON -DMOL_RESTRAINT_ON -DMOL_SWITCHING -DLIGAND_AB
